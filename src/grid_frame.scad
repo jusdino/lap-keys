@@ -24,12 +24,39 @@ module basic_rectilinear_right(pcb_pins=false) {
 }
 
 module basic_tilted_right(pcb_pins=false) {
+  key_spacing = 18;
+  curve_x_rad = 150;
+  arc_length = key_spacing;
+  dphi = (360*arc_length)/(2*PI*curve_x_rad);
+  function y_from_phi(phi) = sin(phi)*curve_x_rad;
+  function z_from_phi(phi) = curve_x_rad * (1 - cos(phi));
+  function dx_from_phi(phi) = 2*phi/dphi;
+  theta = atan(2/key_spacing);
   coords = [
-    [0, 0, 0, 0, 0], [18, 0, 0, 0, 0], [0, 18, 0, 0, 0],
-    [18, 18, 0, 0, 4], [36, 18, 0, 0, 4], [54, 18, 0, 0, 4], [72, 18, 0, 0, 4], [90, 18, 0, 0, 4],
-    [16, 36, 1.8, 5, 4], [34, 36, 1.8, 5, 4], [52, 36, 1.8, 5, 4], [70, 36, 1.8, 5, 4], [88, 36, 1.8, 5, 4],
-    [14, 54, 3.6, 10, 4], [32, 54, 3.6, 10, 4], [50, 54, 3.6, 10, 4], [68, 54, 3.6, 10, 4], [86, 54, 3.6, 10, 4],
-    [12, 72, 6.3, 15, 4], [30, 72, 6.3, 15, 4], [48, 72, 6.3, 15, 4], [66, 72, 6.3, 15, 4], [84, 72, 6.3, 15, 4],
+  // X                                  Y                   X                   PHI,    THETA
+    [0,                                 -key_spacing,       0,                  0,      0    ],
+    [key_spacing,                       -key_spacing,       0,                  0,      0    ],
+    [0,                                 0,                  0,                  0,      0    ],
+    [key_spacing,                       y_from_phi(0),      z_from_phi(0),      0,      theta],
+    [2*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
+    [3*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
+    [4*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
+    [5*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
+    [1*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
+    [2*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
+    [3*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
+    [4*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
+    [5*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
+    [1*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
+    [2*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
+    [3*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
+    [4*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
+    [5*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
+    [1*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
+    [2*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
+    [3*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
+    [4*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
+    [5*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
   ];
 
   map_over_xyzpt(coords) {

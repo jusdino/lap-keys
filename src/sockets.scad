@@ -16,7 +16,7 @@ module cherrymx_socket(pcb_pins=false) {
   body_dy = plate_dy + body_outset;
   body_dz = socket_dz - plate_dz;
   base_dz = 1.5;
-  wall_thickness = 2;
+  wall_thickness = 2.5;
 
   hull_dx = body_dx + 2*wall_thickness;
   hull_dy = body_dy + 2*wall_thickness;

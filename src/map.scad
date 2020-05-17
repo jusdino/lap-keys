@@ -15,8 +15,10 @@ module map_over_xyz(coordinates) {
 module map_over_xyzpt(coordinates) {
   for (i=coordinates) {
     translate([i[0], i[1], i[2]]) {
-      rotate([i[3], 0, i[4]]) {
-        children();
+      rotate([i[3], 0, 0]) {
+        rotate([0, 0, i[4]]) {
+          children();
+        }
       }
     }
   }
