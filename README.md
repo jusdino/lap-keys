@@ -9,3 +9,10 @@ This is a very early design concept for a new keyboard that will hopefully fix s
 - I've ordered a number of parts for prototyping but they've yet to arrive so I'm doing what pre-work I can.
 - Made an initial rough mockup of the CherryMX switches, as they are a common design. I can use this mock-up to build the sockets and spacing of the keyboard frame:
 ![CherryMx](resources/cherrymx.png)
+
+- With the mock-up, I added some handy modules for mapping switches and sockets over coordinates for quick brainstorming of layout ideas. With those, I made these quick layouts:
+**Right-handed rectilinear:**
+![right-rectilinear](resources/basic_rectilinear_right.png)
+**Right-hand tilted:**
+![right-tilted](resources/basic_tilted_right.png)
+I can't verify they'll fit or anything until I get some actual components in my hands, but maybe I'll print one up for testing once the switches arrive.
