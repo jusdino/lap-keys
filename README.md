@@ -11,7 +11,8 @@ This is a very early design concept for a new keyboard that will hopefully fix s
 ![CherryMx](resources/cherrymx.png)
 
 - With the mock-up, I added some handy modules for mapping switches and sockets over coordinates for quick brainstorming of layout ideas. With those, I made these quick layouts:
-**Right-handed rectilinear:**
+
+**Right-hand rectilinear:**
 ![right-rectilinear](resources/basic_rectilinear_right.png)
 **Right-hand tilted:**
 ![right-tilted](resources/basic_tilted_right.png)
