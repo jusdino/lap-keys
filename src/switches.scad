@@ -10,7 +10,7 @@ module cherrymx(pcb_pins=false) {
   body_dy = 14;
   body_dz = 11.6;
   body_lower_dz = 5;
-  body_upper_dx = 15.4;
+  body_upper_dx = 14;
   body_upper_dy = 15.4;
   body_upper_dz = body_dz - body_lower_dz;
 

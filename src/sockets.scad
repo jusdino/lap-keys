@@ -9,20 +9,22 @@ module cherrymx_socket(pcb_pins=false) {
 
   plate_dx = 14 + socket_tolerance;
   plate_dy = 14 + socket_tolerance;
-  plate_dz = 1.5;
+  plate_dz = 1.3;
   body_outset = 0.5;
 
   body_dx = plate_dx + body_outset;
   body_dy = plate_dy + body_outset;
   body_dz = socket_dz - plate_dz;
-  base_dz = 1.5;
-  wall_thickness = 2.5;
+  base_dz = 1;
+  wall_thickness = 4.5;
 
   hull_dx = body_dx + 2*wall_thickness;
   hull_dy = body_dy + 2*wall_thickness;
   hull_dz = socket_dz + base_dz;
 
-  difference() {
+  socket_color = [32/255, 62/255, 212/255];
+
+  color(socket_color) difference() {
     translate([-hull_dx/2, -hull_dy/2, -hull_dz]) {
       cube([hull_dx, hull_dy, hull_dz]);
     }
