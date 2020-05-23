@@ -37,7 +37,7 @@ module cherrymx_socket(pcb_pins=false) {
     // PINS
     center_pin_dia = 4;
 
-    wire_pin_dia = 1.5;
+    wire_pin_dia = 2; // Widen to allow a diode to pass through 1.5;
     wire_pin_1_coords = [-3.81, 2.54, 0];
     wire_pin_2_coords = [2.54, 5.08, 0];
 
