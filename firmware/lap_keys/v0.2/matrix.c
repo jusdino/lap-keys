@@ -42,17 +42,13 @@ Module   Arduino
 */
 
 // User define values
-#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
-#define SS  10          // Slave Select pin. Connect this to SS on the module.
-#define CPI 1600
-
 #include "matrix.h"
 #include "pointing_device.h"
 #include "PMW3360.h"
 
 void matrix_init_custom(void) {
   //pmw_begin(10, 1600); // to set CPI (Count per Inch), pass it as the second parameter
-  pmw_begin(SS);  // 10 is the pin connected to SS of the module.
+  pmw_begin(PMW_SS);  // 10 is the pin connected to SS of the module.
 }
 
 bool matrix_scan_custom(matrix_row_t current_matrix[]) {

@@ -1,7 +1,6 @@
 #ifndef PROTOTYPE_H
 #define PROTOTYPE_H
 
-#include QMK_KEYBOARD_H
 #include "quantum.h"
 
 #define LAYOUT( \

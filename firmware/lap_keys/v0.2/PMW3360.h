@@ -23,7 +23,10 @@
 #define PMW3360_LIB
 
 #include <stdbool.h>
+#include <LUFA/Drivers/Peripheral/SPI.h>
 #include QMK_KEYBOARD_H
+
+#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 
 // Registers
 #define REG_Product_ID  0x00
@@ -122,7 +125,7 @@ struct PMW3360_DATA
  int16_t shutter; // unit: clock cycles of the internal oscillator. shutter is adjusted to keep the average raw data values within normal operating ranges.
 }; 
 bool pmw_begin(const uint8_t ss_pin);
-void set_cpi(uint8_t cpi);
+void set_cpi(uint32_t cpi);
 uint8_t get_cpi(void);
 struct PMW3360_DATA read_burst(void);
 uint8_t read_reg(uint8_t reg_addr);

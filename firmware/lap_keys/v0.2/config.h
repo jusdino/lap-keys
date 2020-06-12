@@ -23,4 +23,8 @@
 /* COL2ROW or ROW2COL */
 #define DIODE_DIRECTION ROW2COL
 
+/* PMW3360 */
+#define PMW_SS 10
+#define CPI 1600
+
 #endif
