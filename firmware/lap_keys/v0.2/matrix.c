@@ -48,13 +48,13 @@ Module   Arduino
 #include "PMW3360.h"
 
 void matrix_init_custom(void) {
-  print("matrix_init_custom");
+  uprintf("matrix_init_custom");
   //pmw_begin(10, 1600); // to set CPI (Count per Inch), pass it as the second parameter
   pmw_begin(PMW_SS);  // 10 is the pin connected to SS of the module.
 }
 
 bool matrix_scan_custom(matrix_row_t current_matrix[]) {
-  print("matrix_scan_custom");
+  uprintf("matrix_scan_custom");
   bool matrix_has_changed = false;
     
   struct PMW3360_DATA data = read_burst();

@@ -310,7 +310,7 @@ bool _inBurst = false;
 
 bool pmw_begin(const uint8_t ss_pin)
 {
-  print("pmw_begin");
+  uprintf("pmw_begin");
   _inBurst = false;
   // hard reset
   END_COM; BEGIN_COM; END_COM; // ensure that the serial port is reset
@@ -486,6 +486,7 @@ void adns_write_reg(uint8_t reg_addr, uint8_t data) {
 adns_upload_firmware: load SROM content to the motion sensor
 */
 void adns_upload_firmware() {
+  uprintf("adns_upload_firmware");
   //Write 0 to Rest_En bit of Config2 register to disable Rest mode.
   adns_write_reg(REG_Config2, 0x00);
 
