@@ -16,8 +16,8 @@
 #define MATRIX_COLS 12
 
 /* mine PCB default pin-out */
-#define MATRIX_ROW_PINS { B3, B2, B6, B4, B5 }
-#define MATRIX_COL_PINS { E6, D7, C6, D4, D0, D1, B1, F7, F6, F5, F4, B0 }
+#define MATRIX_ROW_PINS { B7, B5, B4, E6, D7 }
+#define MATRIX_COL_PINS { C6, D4, D0, D1, D2, D3, F1, F0, F6, F5, F4, B0 }
 #define UNUSED_PINS
 
 /* COL2ROW or ROW2COL */
