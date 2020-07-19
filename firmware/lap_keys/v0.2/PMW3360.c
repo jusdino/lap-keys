@@ -21,8 +21,12 @@
 
 #include "PMW3360.h"
 
-#define SS_LOW(pin) (PORTB &= ~(1 << pin))
-#define SS_HIGH(pin) (PORTB |= (1 << pin))
+#define SS_LOW(pin) writePinLow(PMW_SS)
+#define SS_HIGH(pin) writePinHigh(PMW_SS)
+/*
+#SS_LOW(pin) (PORTB &= ~(1 << pin))
+#SS_HIGH(pin) (PORTB |= (1 << pin))
+*/
 #define BEGIN_COM SS_LOW(PMW_SS); wait_us(1)
 #define END_COM   wait_us(1); SS_HIGH(PMW_SS)
 
@@ -307,6 +311,18 @@ const uint8_t firmware_data[] PROGMEM = {    // SROM 0x04
 //	PMW3360 Motion Sensor Module
 bool _inBurst = false;
 
+void print_byte(uint8_t byte) {
+  uprintf("%c%c%c%c%c%c%c%c|", \
+    (byte & 0x80 ? '1' : '0'), \
+    (byte & 0x40 ? '1' : '0'), \
+    (byte & 0x20 ? '1' : '0'), \
+    (byte & 0x10 ? '1' : '0'), \
+    (byte & 0x08 ? '1' : '0'), \
+    (byte & 0x04 ? '1' : '0'), \
+    (byte & 0x02 ? '1' : '0'), \
+    (byte & 0x01 ? '1' : '0'));
+}
+
 bool pmw_begin(const uint8_t ss_pin)
 {
   uprintf("pmw_begin\n");
@@ -376,7 +392,6 @@ type: PMW3360_DATA
 */
 struct PMW3360_DATA read_burst()
 {
-  uprintf("read_burst\n");
   if(!_inBurst)
   {
     adns_write_reg(REG_Motion_Burst, 0x00);
@@ -390,20 +405,42 @@ struct PMW3360_DATA read_burst()
   struct PMW3360_DATA data;
 
   uint8_t buf0 = SPI_ReceiveByte();
-  SPI_SendByte(0x00);
+  print_byte(buf0);
+  SPI_SendByte(0x00); // skip Observation byte
   data.isMotion = (buf0 & 0x80) != 0;
   data.isOnSurface = (buf0 & 0x08) == 0;   // 0 if on surface / 1 if off surface
 
-  data.dx = SPI_ReceiveByte();         // dx LSB
-  data.dx |= (SPI_ReceiveByte() << 8); // dx MSB
-  data.dy = SPI_ReceiveByte();         // dy LSB
-  data.dy |= (SPI_ReceiveByte() << 8); // dy MSB
-  data.shutter = SPI_ReceiveByte();         // shutter LSB
-  data.shutter |= (SPI_ReceiveByte() << 8); // shutter MSB
-  data.SQUAL = SPI_ReceiveByte();
-  data.rawDataSum = SPI_ReceiveByte();
-  data.maxRawData = SPI_ReceiveByte();
-  data.minRawData = SPI_ReceiveByte();
+  uint8_t byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.dx = byte;         // dx LSB
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.dx |= (byte << 8); // dx MSB
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.dy = byte;         // dy LSB
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.dy |= (byte << 8); // dy MSB
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.shutter = byte;         // shutter LSB
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.shutter |= (byte << 8); // shutter MSB
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.SQUAL = byte;
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.rawDataSum = byte;
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.maxRawData = byte;
+  byte = SPI_ReceiveByte();
+  print_byte(byte);
+  data.minRawData = byte;
+  uprintf("\n");
   
   END_COM;
 
@@ -413,32 +450,6 @@ struct PMW3360_DATA read_burst()
   }
 
   return data;
-}
-
-/* 
-read_reg: get one uint8_t value from the given reg_addr.
-
-# parameter
-reg_addr: the register address
-# return
-uint8_t value on the register.
-*/
-uint8_t read_reg(uint8_t reg_addr)
-{
-  uint8_t data = adns_read_reg(reg_addr);
-  return data;
-}
-
-/* 
-write_reg: write one uint8_t value to the given reg_addr.
-
-# parameter
-reg_addr: the register address
-data: uint8_t value to be pass to the register.
-*/
-void write_reg(uint8_t reg_addr, uint8_t data)
-{
-  adns_write_reg(reg_addr, data);
 }
 
 /* 
@@ -453,7 +464,8 @@ uint8_t adns_read_reg(uint8_t reg_addr) {
   BEGIN_COM;
   // send adress of the register, with MSBit = 0 to indicate it's a read
   SPI_SendByte(reg_addr & 0x7f );
-  wait_us(100); // tSRAD is 25, but 100us seems to be stable.
+  wait_us(160); // tSRAD is 25, but 100us seems to be stable.
+  // wait_us(100); // tSRAD is 25, but 100us seems to be stable.
   // read data
   uint8_t data = SPI_ReceiveByte();
 
