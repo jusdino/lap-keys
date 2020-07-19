@@ -19,7 +19,6 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <print.h>
 #include "PMW3360.h"
 
 #define SS_LOW(pin) (PORTB &= ~(1 << pin))
@@ -310,7 +309,8 @@ bool _inBurst = false;
 
 bool pmw_begin(const uint8_t ss_pin)
 {
-  uprintf("pmw_begin");
+  uprintf("pmw_begin\n");
+  SPI_Init(SPI_OPTION);
   _inBurst = false;
   // hard reset
   END_COM; BEGIN_COM; END_COM; // ensure that the serial port is reset
@@ -376,6 +376,7 @@ type: PMW3360_DATA
 */
 struct PMW3360_DATA read_burst()
 {
+  uprintf("read_burst\n");
   if(!_inBurst)
   {
     adns_write_reg(REG_Motion_Burst, 0x00);

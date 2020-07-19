@@ -42,26 +42,30 @@ Module   Arduino
 */
 
 // User define values
-#include <print.h>
 #include "matrix.h"
 #include "pointing_device.h"
 #include "PMW3360.h"
 
 void matrix_init_custom(void) {
-  uprintf("matrix_init_custom");
   //pmw_begin(10, 1600); // to set CPI (Count per Inch), pass it as the second parameter
-  pmw_begin(PMW_SS);  // 10 is the pin connected to SS of the module.
+  uprintf("matrix_init_custom\n");
+  pmw_begin(PMW_SS);
+  uprintf("matrix_init_custom complete\n");
 }
 
 bool matrix_scan_custom(matrix_row_t current_matrix[]) {
-  uprintf("matrix_scan_custom");
+  //uprintf("matrix_scan_custom\n");
+
   bool matrix_has_changed = false;
     
   struct PMW3360_DATA data = read_burst();
+  uprintf("isOnSurface: %d isMotion: %d\n", data.isOnSurface, data.isMotion);
   if(data.isOnSurface && data.isMotion)
   {
+
     int16_t mdx = constrain(data.dx, -127, 127);
     int16_t mdy = constrain(data.dy, -127, 127);
+    uprintf("x: %d y: %d\n", data.dx, data.dy);
     report_mouse_t currentReport = pointing_device_get_report();
     currentReport.x = (int)mdx;
     currentReport.y = (int)mdy;

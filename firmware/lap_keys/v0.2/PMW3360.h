@@ -23,10 +23,12 @@
 #define PMW3360_LIB
 
 #include <stdbool.h>
+#include <print.h>
 #include <LUFA/Drivers/Peripheral/SPI.h>
 #include QMK_KEYBOARD_H
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
+#define SPI_OPTION (SPI_SPEED_FCPU_DIV_2 | SPI_SCK_LEAD_FALLING | SPI_SAMPLE_TRAILING | SPI_ORDER_MSB_FIRST | SPI_MODE_MASTER)
 
 // Registers
 #define REG_Product_ID  0x00
