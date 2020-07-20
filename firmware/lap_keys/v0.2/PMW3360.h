@@ -127,7 +127,7 @@ struct PMW3360_DATA
  int16_t shutter; // unit: clock cycles of the internal oscillator. shutter is adjusted to keep the average raw data values within normal operating ranges.
 }; 
 void print_byte(uint8_t byte);
-bool pmw_begin(const uint8_t ss_pin);
+bool pmw_begin(void);
 void set_cpi(uint32_t cpi);
 uint8_t get_cpi(void);
 struct PMW3360_DATA read_burst(void);

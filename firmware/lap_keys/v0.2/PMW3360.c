@@ -323,9 +323,8 @@ void print_byte(uint8_t byte) {
     (byte & 0x01 ? '1' : '0'));
 }
 
-bool pmw_begin(const uint8_t ss_pin)
+bool pmw_begin()
 {
-  uprintf("pmw_begin\n");
   SPI_Init(SPI_OPTION);
   _inBurst = false;
   // hard reset
@@ -394,6 +393,7 @@ struct PMW3360_DATA read_burst()
 {
   if(!_inBurst)
   {
+    uprintf("burst on");
     adns_write_reg(REG_Motion_Burst, 0x00);
     _inBurst = true;    
   }
@@ -404,11 +404,11 @@ struct PMW3360_DATA read_burst()
 
   struct PMW3360_DATA data;
 
-  uint8_t buf0 = SPI_ReceiveByte();
-  print_byte(buf0);
+  uint8_t motion = SPI_ReceiveByte(); // Read Motion byte
+  print_byte(motion);
   SPI_SendByte(0x00); // skip Observation byte
-  data.isMotion = (buf0 & 0x80) != 0;
-  data.isOnSurface = (buf0 & 0x08) == 0;   // 0 if on surface / 1 if off surface
+  data.isMotion = (motion & 0x80) != 0;
+  data.isOnSurface = (motion & 0x08) == 0;   // 0 if on surface / 1 if off surface
 
   uint8_t byte = SPI_ReceiveByte();
   print_byte(byte);
@@ -444,10 +444,10 @@ struct PMW3360_DATA read_burst()
   
   END_COM;
 
-  if(buf0 & 0b111) // panic recovery, sometimes burst mode works weird.
-  {
-    _inBurst = false;
-  }
+//   if(motion & 0b111) // panic recovery, sometimes burst mode works weird.
+//   {
+//     _inBurst = false;
+//   }
 
   return data;
 }
@@ -499,7 +499,6 @@ void adns_write_reg(uint8_t reg_addr, uint8_t data) {
 adns_upload_firmware: load SROM content to the motion sensor
 */
 void adns_upload_firmware() {
-  uprintf("adns_upload_firmware");
   //Write 0 to Rest_En bit of Config2 register to disable Rest mode.
   adns_write_reg(REG_Config2, 0x00);
 
