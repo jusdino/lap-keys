@@ -21,15 +21,6 @@
 
 #include "PMW3360.h"
 
-#define SS_LOW(pin) writePinLow(PMW_SS)
-#define SS_HIGH(pin) writePinHigh(PMW_SS)
-/*
-#SS_LOW(pin) (PORTB &= ~(1 << pin))
-#SS_HIGH(pin) (PORTB |= (1 << pin))
-*/
-#define BEGIN_COM SS_LOW(PMW_SS); wait_us(1)
-#define END_COM   wait_us(1); SS_HIGH(PMW_SS)
-
 const uint16_t firmware_length = 4094;
 // clang-format off
 const uint8_t firmware_data[] PROGMEM = {    // SROM 0x04
