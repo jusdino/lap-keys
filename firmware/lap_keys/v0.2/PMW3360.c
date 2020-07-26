@@ -301,6 +301,7 @@ const uint8_t firmware_data[] PROGMEM = {    // SROM 0x04
 //================================================================================
 //	PMW3360 Motion Sensor Module
 bool _inBurst = false;
+uint8_t srom_id;
 
 void print_byte(uint8_t byte) {
   uprintf("%c%c%c%c%c%c%c%c|", \
@@ -316,6 +317,7 @@ void print_byte(uint8_t byte) {
 
 bool pmw_begin()
 {
+  setPinOutput(B6);
   SPI_Init(SPI_OPTION);
   _inBurst = false;
   // hard reset
@@ -382,63 +384,72 @@ type: PMW3360_DATA
 */
 struct PMW3360_DATA read_burst()
 {
-  if(!_inBurst)
-  {
-    uprintf("burst on");
-    adns_write_reg(REG_Motion_Burst, 0x00);
-    _inBurst = true;    
-  }
+  print_byte(srom_id);
+  print_byte(adns_read_reg(REG_Product_ID));
+  print_byte(adns_read_reg(REG_Revision_ID));
+  print_byte(adns_read_reg(REG_Inverse_Product_ID));
+  print_byte(adns_read_reg(REG_SROM_ID));
+  // if(!_inBurst)
+  // {
+  //   uprintf("burst on");
+  //   adns_write_reg(REG_Motion_Burst, 0x00);
+  //   _inBurst = true;    
+  // }
 
-  BEGIN_COM;
-  SPI_SendByte(REG_Motion_Burst);    
-  wait_us(35); // waits for tSRAD
+  // uprintf("%d - %d\n", init_ran, sig_good);
+
+  // BEGIN_COM;
+  // SPI_SendByte(REG_Motion_Burst);    
+  // wait_us(35); // waits for tSRAD
 
   struct PMW3360_DATA data;
+  data.dx = 0;
+  data.dy = 0;
 
-  uint8_t motion = SPI_ReceiveByte(); // Read Motion byte
-  print_byte(motion);
-  SPI_SendByte(0x00); // skip Observation byte
-  data.isMotion = (motion & 0x80) != 0;
-  data.isOnSurface = (motion & 0x08) == 0;   // 0 if on surface / 1 if off surface
+  // uint8_t motion = SPI_ReceiveByte(); // Read Motion byte
+  // print_byte(motion);
+  // SPI_SendByte(0x00); // skip Observation byte
+  // data.isMotion = (motion & 0x80) != 0;
+  // data.isOnSurface = (motion & 0x08) == 0;   // 0 if on surface / 1 if off surface
 
-  uint8_t byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.dx = byte;         // dx LSB
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.dx |= (byte << 8); // dx MSB
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.dy = byte;         // dy LSB
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.dy |= (byte << 8); // dy MSB
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.shutter = byte;         // shutter LSB
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.shutter |= (byte << 8); // shutter MSB
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.SQUAL = byte;
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.rawDataSum = byte;
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.maxRawData = byte;
-  byte = SPI_ReceiveByte();
-  print_byte(byte);
-  data.minRawData = byte;
+  // uint8_t byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.dx = byte;         // dx LSB
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.dx |= (byte << 8); // dx MSB
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.dy = byte;         // dy LSB
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.dy |= (byte << 8); // dy MSB
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.shutter = byte;         // shutter LSB
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.shutter |= (byte << 8); // shutter MSB
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.SQUAL = byte;
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.rawDataSum = byte;
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.maxRawData = byte;
+  // byte = SPI_ReceiveByte();
+  // print_byte(byte);
+  // data.minRawData = byte;
   uprintf("\n");
   
-  END_COM;
+  // END_COM;
 
-//   if(motion & 0b111) // panic recovery, sometimes burst mode works weird.
-//   {
-//     _inBurst = false;
-//   }
+  // if(motion & 0b111) // panic recovery, sometimes burst mode works weird.
+  // {
+  //   _inBurst = false;
+  // }
 
   return data;
 }
@@ -455,12 +466,14 @@ uint8_t adns_read_reg(uint8_t reg_addr) {
   BEGIN_COM;
   // send adress of the register, with MSBit = 0 to indicate it's a read
   SPI_SendByte(reg_addr & 0x7f );
-  wait_us(160); // tSRAD is 25, but 100us seems to be stable.
+  wait_us(100);
+  // wait_us(160); // tSRAD is 25, but 100us seems to be stable.
   // wait_us(100); // tSRAD is 25, but 100us seems to be stable.
   // read data
   uint8_t data = SPI_ReceiveByte();
 
   END_COM;
+
   wait_us(19); //  tSRW/tSRR (=20us) minus tSCLK-NCS
 
   return data;
@@ -515,14 +528,15 @@ void adns_upload_firmware() {
     SPI_SendByte(c);
     wait_us(15);
   }
+  END_COM;
 
   //Read the SROM_ID register to verify the ID before any other register reads or writes.
-  adns_read_reg(REG_SROM_ID);
+  srom_id = adns_read_reg(REG_SROM_ID);
 
   //Write 0x00 (rest disable) to Config2 register for wired mouse or 0x20 for wireless mouse design. 
   adns_write_reg(REG_Config2, 0x00);
 
-  END_COM;
+  // END_COM;
 }
 
 /* 

@@ -24,8 +24,7 @@
 #define DIODE_DIRECTION ROW2COL
 
 /* PMW3360 */
-#define PMW_SS 10
-#define SS PMW_SS
-#define CPI 16
+#define PMW_SS B6
+#define CPI 5000
 
 #endif

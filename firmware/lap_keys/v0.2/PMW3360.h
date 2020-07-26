@@ -28,14 +28,12 @@
 
 #include QMK_KEYBOARD_H
 
+/*
 #define SS_LOW(pin) (PORTB &= ~(1 << pin))
 #define SS_HIGH(pin) (PORTB |= (1 << pin))
-/*
-#define SS_LOW(pin) writePinLow(PMW_SS)
-#define SS_HIGH(pin) writePinHigh(PMW_SS)
 */
-#define BEGIN_COM SS_LOW(PMW_SS); wait_us(1)
-#define END_COM   wait_us(1); SS_HIGH(PMW_SS)
+#define BEGIN_COM writePinLow(PMW_SS); wait_us(1)
+#define END_COM   wait_us(1); writePinHigh(PMW_SS)
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 #define SPI_OPTION (SPI_SPEED_FCPU_DIV_2 | SPI_SCK_LEAD_FALLING | SPI_SAMPLE_TRAILING | SPI_ORDER_MSB_FIRST | SPI_MODE_MASTER)
