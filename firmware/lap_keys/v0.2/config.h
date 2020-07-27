@@ -25,6 +25,6 @@
 
 /* PMW3360 */
 #define PMW_SS B6
-#define CPI 5000
+#define CPI 1600
 
 #endif

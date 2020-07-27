@@ -301,7 +301,6 @@ const uint8_t firmware_data[] PROGMEM = {    // SROM 0x04
 //================================================================================
 //	PMW3360 Motion Sensor Module
 bool _inBurst = false;
-uint8_t srom_id;
 
 void print_byte(uint8_t byte) {
   uprintf("%c%c%c%c%c%c%c%c|", \
@@ -324,7 +323,7 @@ bool pmw_begin()
   END_COM; BEGIN_COM; END_COM; // ensure that the serial port is reset
 
   adns_write_reg(REG_Shutdown, 0xb6); // Shutdown first
-  wait_us(300);
+  wait_ms(300);
   
   BEGIN_COM;
   wait_us(40);
@@ -332,7 +331,7 @@ bool pmw_begin()
   wait_us(40);
 
   adns_write_reg(REG_Power_Up_Reset, 0x5a); // force reset
-  wait_us(50); // wait for it to reboot
+  wait_ms(50); // wait for it to reboot
   
   // read registers 0x02 to 0x06 (and discard the data)
   adns_read_reg(REG_Motion);
@@ -343,7 +342,7 @@ bool pmw_begin()
   // upload the firmware
   adns_upload_firmware();
   
-  wait_us(10);
+  wait_ms(10);
   set_cpi(CPI);
 
   return check_signature();
@@ -369,12 +368,12 @@ get_cpi: get CPI level of the motion sensor.
 # return
 cpi: Count per Inch value
 */
-uint8_t get_cpi()
-{
-  int cpival = adns_read_reg(REG_Config1);
-
-  return (cpival + 1)*100;
-}
+// uint8_t get_cpi()
+// {
+//   int cpival = adns_read_reg(REG_Config1);
+// 
+//   return (cpival + 1)*100;
+// }
 
 /* 
 read_burst: get one frame of motion data. 
@@ -384,72 +383,59 @@ type: PMW3360_DATA
 */
 struct PMW3360_DATA read_burst()
 {
-  print_byte(srom_id);
-  print_byte(adns_read_reg(REG_Product_ID));
-  print_byte(adns_read_reg(REG_Revision_ID));
-  print_byte(adns_read_reg(REG_Inverse_Product_ID));
-  print_byte(adns_read_reg(REG_SROM_ID));
-  // if(!_inBurst)
-  // {
-  //   uprintf("burst on");
-  //   adns_write_reg(REG_Motion_Burst, 0x00);
-  //   _inBurst = true;    
-  // }
+  // print_byte(srom_id);
+  // print_byte(adns_read_reg(REG_Product_ID));
+  // print_byte(adns_read_reg(REG_Revision_ID));
+  // print_byte(adns_read_reg(REG_Inverse_Product_ID));
+  // print_byte(adns_read_reg(REG_SROM_ID));
+  if(!_inBurst)
+  {
+    uprintf("burst on");
+    adns_write_reg(REG_Motion_Burst, 0x00);
+    _inBurst = true;    
+  }
 
-  // uprintf("%d - %d\n", init_ran, sig_good);
-
-  // BEGIN_COM;
-  // SPI_SendByte(REG_Motion_Burst);    
-  // wait_us(35); // waits for tSRAD
+  BEGIN_COM;
+  SPI_SendByte(REG_Motion_Burst);    
+  wait_us(35); // waits for tSRAD
 
   struct PMW3360_DATA data;
+  data.motion = 0;
   data.dx = 0;
+  data.mdx = 0;
   data.dy = 0;
+  data.mdx = 0;
 
-  // uint8_t motion = SPI_ReceiveByte(); // Read Motion byte
-  // print_byte(motion);
-  // SPI_SendByte(0x00); // skip Observation byte
-  // data.isMotion = (motion & 0x80) != 0;
-  // data.isOnSurface = (motion & 0x08) == 0;   // 0 if on surface / 1 if off surface
+  data.motion = SPI_ReceiveByte();
+  SPI_SendByte(0x00); // skip Observation
+  data.dx = SPI_ReceiveByte();
+  data.mdx = SPI_ReceiveByte();
+  data.dy = SPI_ReceiveByte();
+  data.mdy = SPI_ReceiveByte();
 
-  // uint8_t byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.dx = byte;         // dx LSB
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.dx |= (byte << 8); // dx MSB
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.dy = byte;         // dy LSB
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.dy |= (byte << 8); // dy MSB
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.shutter = byte;         // shutter LSB
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.shutter |= (byte << 8); // shutter MSB
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.SQUAL = byte;
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.rawDataSum = byte;
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.maxRawData = byte;
-  // byte = SPI_ReceiveByte();
-  // print_byte(byte);
-  // data.minRawData = byte;
-  uprintf("\n");
+  END_COM;
+
+  if (DEBUG) {
+    print_byte(data.motion);
+    print_byte(data.dx);
+    print_byte(data.mdx);
+    print_byte(data.dy);
+    print_byte(data.mdy);
+    uprintf("\n");
+  }
+
+  data.isMotion = (data.motion & 0x80) != 0;
+  data.isOnSurface = (data.motion & 0x08) == 0;
+  data.dx |= (data.mdx << 8);
+  data.dy |= (data.mdy << 8);
+
   
-  // END_COM;
+  END_COM;
 
-  // if(motion & 0b111) // panic recovery, sometimes burst mode works weird.
-  // {
-  //   _inBurst = false;
-  // }
+  if(data.motion & 0b111) // panic recovery, sometimes burst mode works weird.
+  {
+    _inBurst = false;
+  }
 
   return data;
 }
@@ -510,7 +496,7 @@ void adns_upload_firmware() {
   adns_write_reg(REG_SROM_Enable, 0x1d);
 
   // wait for more than one frame period
-  wait_us(10); // assume that the frame rate is as low as 100fps... even if it should never be that low
+  wait_ms(10); // assume that the frame rate is as low as 100fps... even if it should never be that low
 
   // write 0x18 to SROM_enable to start SROM download
   adns_write_reg(REG_SROM_Enable, 0x18);
@@ -528,15 +514,15 @@ void adns_upload_firmware() {
     SPI_SendByte(c);
     wait_us(15);
   }
-  END_COM;
+  wait_us(200);
 
   //Read the SROM_ID register to verify the ID before any other register reads or writes.
-  srom_id = adns_read_reg(REG_SROM_ID);
+  adns_read_reg(REG_SROM_ID);
 
   //Write 0x00 (rest disable) to Config2 register for wired mouse or 0x20 for wireless mouse design. 
   adns_write_reg(REG_Config2, 0x00);
 
-  // END_COM;
+  END_COM;
 }
 
 /* 
