@@ -24,16 +24,12 @@
 
 #include <stdbool.h>
 #include <print.h>
-#include <LUFA/Drivers/Peripheral/SPI.h>
+#include "drivers/avr/spi_master.h"
 
 #include QMK_KEYBOARD_H
 
-/*
-#define SS_LOW(pin) (PORTB &= ~(1 << pin))
-#define SS_HIGH(pin) (PORTB |= (1 << pin))
-*/
-#define BEGIN_COM writePinLow(PMW_SS); wait_us(1)
-#define END_COM   wait_us(1); writePinHigh(PMW_SS)
+#define BEGIN_COM spi_start(PMW_SS, false, 3, 2); wait_us(1)
+#define END_COM   wait_us(1); spi_stop();
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 #define SPI_OPTION (SPI_SPEED_FCPU_DIV_2 | SPI_SCK_LEAD_FALLING | SPI_SAMPLE_TRAILING | SPI_ORDER_MSB_FIRST | SPI_MODE_MASTER)
@@ -137,10 +133,11 @@ struct PMW3360_DATA
  // uint8_t minRawData;      // Min raw data value in current frame, max=127
  // int16_t shutter; // unit: clock cycles of the internal oscillator. shutter is adjusted to keep the average raw data values within normal operating ranges.
 }; 
+#ifdef SPI_DEBUG
 void print_byte(uint8_t byte);
+#endif
 bool pmw_begin(void);
 void set_cpi(uint32_t cpi);
-// uint8_t get_cpi(void);
 struct PMW3360_DATA read_burst(void);
 uint8_t adns_read_reg(uint8_t reg_addr);
 void adns_write_reg(uint8_t reg_addr, uint8_t data);

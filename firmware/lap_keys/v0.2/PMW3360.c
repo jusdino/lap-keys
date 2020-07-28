@@ -302,6 +302,7 @@ const uint8_t firmware_data[] PROGMEM = {    // SROM 0x04
 //	PMW3360 Motion Sensor Module
 bool _inBurst = false;
 
+#ifdef SPI_DEBUG
 void print_byte(uint8_t byte) {
   uprintf("%c%c%c%c%c%c%c%c|", \
     (byte & 0x80 ? '1' : '0'), \
@@ -313,11 +314,11 @@ void print_byte(uint8_t byte) {
     (byte & 0x02 ? '1' : '0'), \
     (byte & 0x01 ? '1' : '0'));
 }
+#endif
 
 bool pmw_begin()
 {
-  setPinOutput(B6);
-  SPI_Init(SPI_OPTION);
+  spi_init();
   _inBurst = false;
   // hard reset
   END_COM; BEGIN_COM; END_COM; // ensure that the serial port is reset
@@ -357,23 +358,9 @@ cpi: Count per Inch value
 void set_cpi(uint32_t cpi)
 {
   int cpival = constrain((cpi/100)-1, 0, 0x77); // limits to 0--119 
-  //_CPI = (cpival + 1)*100;
   
   adns_write_reg(REG_Config1, cpival);
 }
-
-/* 
-get_cpi: get CPI level of the motion sensor.
-
-# return
-cpi: Count per Inch value
-*/
-// uint8_t get_cpi()
-// {
-//   int cpival = adns_read_reg(REG_Config1);
-// 
-//   return (cpival + 1)*100;
-// }
 
 /* 
 read_burst: get one frame of motion data. 
@@ -383,11 +370,6 @@ type: PMW3360_DATA
 */
 struct PMW3360_DATA read_burst()
 {
-  // print_byte(srom_id);
-  // print_byte(adns_read_reg(REG_Product_ID));
-  // print_byte(adns_read_reg(REG_Revision_ID));
-  // print_byte(adns_read_reg(REG_Inverse_Product_ID));
-  // print_byte(adns_read_reg(REG_SROM_ID));
   if(!_inBurst)
   {
     uprintf("burst on");
@@ -396,7 +378,7 @@ struct PMW3360_DATA read_burst()
   }
 
   BEGIN_COM;
-  SPI_SendByte(REG_Motion_Burst);    
+  spi_write(REG_Motion_Burst);    
   wait_us(35); // waits for tSRAD
 
   struct PMW3360_DATA data;
@@ -406,23 +388,23 @@ struct PMW3360_DATA read_burst()
   data.dy = 0;
   data.mdx = 0;
 
-  data.motion = SPI_ReceiveByte();
-  SPI_SendByte(0x00); // skip Observation
-  data.dx = SPI_ReceiveByte();
-  data.mdx = SPI_ReceiveByte();
-  data.dy = SPI_ReceiveByte();
-  data.mdy = SPI_ReceiveByte();
+  data.motion = spi_read();
+  spi_write(0x00); // skip Observation
+  data.dx = spi_read();
+  data.mdx = spi_read();
+  data.dy = spi_read();
+  data.mdy = spi_read();
 
   END_COM;
 
-  if (DEBUG) {
-    print_byte(data.motion);
-    print_byte(data.dx);
-    print_byte(data.mdx);
-    print_byte(data.dy);
-    print_byte(data.mdy);
-    uprintf("\n");
-  }
+#ifdef SPI_DEBUG
+  print_byte(data.motion);
+  print_byte(data.dx);
+  print_byte(data.mdx);
+  print_byte(data.dy);
+  print_byte(data.mdy);
+  uprintf("\n");
+#endif
 
   data.isMotion = (data.motion & 0x80) != 0;
   data.isOnSurface = (data.motion & 0x08) == 0;
@@ -453,12 +435,10 @@ uint8_t adns_read_reg(uint8_t reg_addr) {
 
   BEGIN_COM;
   // send adress of the register, with MSBit = 0 to indicate it's a read
-  SPI_SendByte(reg_addr & 0x7f );
-  wait_us(100);
-  // wait_us(160); // tSRAD is 25, but 100us seems to be stable.
-  // wait_us(100); // tSRAD is 25, but 100us seems to be stable.
-  // read data
-  uint8_t data = SPI_ReceiveByte();
+  spi_write(reg_addr & 0x7f );
+  wait_us(100); // tSRAD is 25, but 100us seems to be stable.
+
+  uint8_t data = spi_read();
 
   END_COM;
 
@@ -478,9 +458,9 @@ void adns_write_reg(uint8_t reg_addr, uint8_t data) {
 
   BEGIN_COM;
   //send adress of the register, with MSBit = 1 to indicate it's a write
-  SPI_SendByte(reg_addr | 0x80 );
+  spi_write(reg_addr | 0x80 );
   //sent data
-  SPI_SendByte(data);
+  spi_write(data);
 
   wait_us(20); // tSCLK-NCS for write operation
   END_COM;
@@ -506,14 +486,14 @@ void adns_upload_firmware() {
   // write the SROM file (=firmware data)
   
   BEGIN_COM;
-  SPI_SendByte(REG_SROM_Load_Burst | 0x80); // write burst destination adress
+  spi_write(REG_SROM_Load_Burst | 0x80); // write burst destination adress
   wait_us(15);
 
   // send all bytes of the firmware
   unsigned char c;
   for (int i = 0; i < firmware_length; i++) {
     c = (unsigned char)pgm_read_byte(firmware_data + i);
-    SPI_SendByte(c);
+    spi_write(c);
     wait_us(15);
   }
   wait_us(200);

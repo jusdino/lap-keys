@@ -23,7 +23,12 @@
 /* COL2ROW or ROW2COL */
 #define DIODE_DIRECTION ROW2COL
 
+/* OPTIMIZATIONS */
+#define NO_ACTION_MACRO
+#define NO_ACTION_FUNCTION
+
 /* PMW3360 */
+#define SPI_DEBUG
 #define PMW_SS B6
 #define CPI 1600
 
