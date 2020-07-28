@@ -427,7 +427,9 @@ struct PMW3360_DATA read_burst()
   data.isMotion = (data.motion & 0x80) != 0;
   data.isOnSurface = (data.motion & 0x08) == 0;
   data.dx |= (data.mdx << 8);
+  data.dx = data.dx * -1;
   data.dy |= (data.mdy << 8);
+  // data.dy = data.dy * -1;
 
   
   END_COM;
