@@ -137,7 +137,9 @@ struct PMW3360_DATA
  // uint8_t minRawData;      // Min raw data value in current frame, max=127
  // int16_t shutter; // unit: clock cycles of the internal oscillator. shutter is adjusted to keep the average raw data values within normal operating ranges.
 }; 
+#ifdef SPI_DEBUG
 void print_byte(uint8_t byte);
+#endif
 bool pmw_begin(void);
 void set_cpi(uint32_t cpi);
 // uint8_t get_cpi(void);

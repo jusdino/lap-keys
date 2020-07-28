@@ -302,6 +302,7 @@ const uint8_t firmware_data[] PROGMEM = {    // SROM 0x04
 //	PMW3360 Motion Sensor Module
 bool _inBurst = false;
 
+#ifdef SPI_DEBUG
 void print_byte(uint8_t byte) {
   uprintf("%c%c%c%c%c%c%c%c|", \
     (byte & 0x80 ? '1' : '0'), \
@@ -313,6 +314,7 @@ void print_byte(uint8_t byte) {
     (byte & 0x02 ? '1' : '0'), \
     (byte & 0x01 ? '1' : '0'));
 }
+#endif
 
 bool pmw_begin()
 {
@@ -383,11 +385,6 @@ type: PMW3360_DATA
 */
 struct PMW3360_DATA read_burst()
 {
-  // print_byte(srom_id);
-  // print_byte(adns_read_reg(REG_Product_ID));
-  // print_byte(adns_read_reg(REG_Revision_ID));
-  // print_byte(adns_read_reg(REG_Inverse_Product_ID));
-  // print_byte(adns_read_reg(REG_SROM_ID));
   if(!_inBurst)
   {
     uprintf("burst on");
@@ -415,14 +412,14 @@ struct PMW3360_DATA read_burst()
 
   END_COM;
 
-  if (DEBUG) {
-    print_byte(data.motion);
-    print_byte(data.dx);
-    print_byte(data.mdx);
-    print_byte(data.dy);
-    print_byte(data.mdy);
-    uprintf("\n");
-  }
+#ifdef SPI_DEBUG
+  print_byte(data.motion);
+  print_byte(data.dx);
+  print_byte(data.mdx);
+  print_byte(data.dy);
+  print_byte(data.mdy);
+  uprintf("\n");
+#endif
 
   data.isMotion = (data.motion & 0x80) != 0;
   data.isOnSurface = (data.motion & 0x08) == 0;

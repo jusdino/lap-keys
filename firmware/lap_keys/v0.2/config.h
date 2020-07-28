@@ -24,6 +24,7 @@
 #define DIODE_DIRECTION ROW2COL
 
 /* PMW3360 */
+//#define SPI_DEBUG
 #define PMW_SS B6
 #define CPI 1600
 
