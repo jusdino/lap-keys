@@ -28,14 +28,12 @@
 
 #include QMK_KEYBOARD_H
 
+/*
 #define SS_LOW(pin) (PORTB &= ~(1 << pin))
 #define SS_HIGH(pin) (PORTB |= (1 << pin))
-/*
-#define SS_LOW(pin) writePinLow(PMW_SS)
-#define SS_HIGH(pin) writePinHigh(PMW_SS)
 */
-#define BEGIN_COM SS_LOW(PMW_SS); wait_us(1)
-#define END_COM   wait_us(1); SS_HIGH(PMW_SS)
+#define BEGIN_COM writePinLow(PMW_SS); wait_us(1)
+#define END_COM   wait_us(1); writePinHigh(PMW_SS)
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 #define SPI_OPTION (SPI_SPEED_FCPU_DIV_2 | SPI_SCK_LEAD_FALLING | SPI_SAMPLE_TRAILING | SPI_ORDER_MSB_FIRST | SPI_MODE_MASTER)
@@ -126,20 +124,23 @@ Struct description
 */
 struct PMW3360_DATA
 {
+ int8_t motion;
  bool isMotion;        // True if a motion is detected. 
  bool isOnSurface;     // True when a chip is on a surface 
  int16_t dx;               // displacement on x directions. Unit: Count. (CPI * Count = Inch value)
+ int8_t mdx;
  int16_t dy;               // displacement on y directions.
- uint8_t SQUAL;           // Surface Quality register, max 0x80. Number of features on the surface = SQUAL * 8
- uint8_t rawDataSum;      // It reports the upper byte of an 18‐bit counter which sums all 1296 raw data in the current frame; * Avg value = Raw_Data_Sum * 1024 / 1296
- uint8_t maxRawData;      // Max raw data value in current frame, max=127
- uint8_t minRawData;      // Min raw data value in current frame, max=127
- int16_t shutter; // unit: clock cycles of the internal oscillator. shutter is adjusted to keep the average raw data values within normal operating ranges.
+ int8_t mdy;
+ // uint8_t SQUAL;           // Surface Quality register, max 0x80. Number of features on the surface = SQUAL * 8
+ // uint8_t rawDataSum;      // It reports the upper byte of an 18‐bit counter which sums all 1296 raw data in the current frame; * Avg value = Raw_Data_Sum * 1024 / 1296
+ // uint8_t maxRawData;      // Max raw data value in current frame, max=127
+ // uint8_t minRawData;      // Min raw data value in current frame, max=127
+ // int16_t shutter; // unit: clock cycles of the internal oscillator. shutter is adjusted to keep the average raw data values within normal operating ranges.
 }; 
 void print_byte(uint8_t byte);
 bool pmw_begin(void);
 void set_cpi(uint32_t cpi);
-uint8_t get_cpi(void);
+// uint8_t get_cpi(void);
 struct PMW3360_DATA read_burst(void);
 uint8_t adns_read_reg(uint8_t reg_addr);
 void adns_write_reg(uint8_t reg_addr, uint8_t data);

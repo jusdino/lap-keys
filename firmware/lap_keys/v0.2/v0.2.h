@@ -2,6 +2,7 @@
 #define PROTOTYPE_H
 
 #include "quantum.h"
+#include "pointing_device.h"
 #include "PMW3360.h"
 
 #define LAYOUT( \
