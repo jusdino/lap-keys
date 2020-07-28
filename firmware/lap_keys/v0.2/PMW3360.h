@@ -138,7 +138,6 @@ void print_byte(uint8_t byte);
 #endif
 bool pmw_begin(void);
 void set_cpi(uint32_t cpi);
-// uint8_t get_cpi(void);
 struct PMW3360_DATA read_burst(void);
 uint8_t adns_read_reg(uint8_t reg_addr);
 void adns_write_reg(uint8_t reg_addr, uint8_t data);

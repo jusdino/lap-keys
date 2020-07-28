@@ -318,7 +318,6 @@ void print_byte(uint8_t byte) {
 
 bool pmw_begin()
 {
-  //setPinOutput(B6);
   spi_init();
   _inBurst = false;
   // hard reset
@@ -359,23 +358,9 @@ cpi: Count per Inch value
 void set_cpi(uint32_t cpi)
 {
   int cpival = constrain((cpi/100)-1, 0, 0x77); // limits to 0--119 
-  //_CPI = (cpival + 1)*100;
   
   adns_write_reg(REG_Config1, cpival);
 }
-
-/* 
-get_cpi: get CPI level of the motion sensor.
-
-# return
-cpi: Count per Inch value
-*/
-// uint8_t get_cpi()
-// {
-//   int cpival = adns_read_reg(REG_Config1);
-// 
-//   return (cpival + 1)*100;
-// }
 
 /* 
 read_burst: get one frame of motion data. 
@@ -451,10 +436,8 @@ uint8_t adns_read_reg(uint8_t reg_addr) {
   BEGIN_COM;
   // send adress of the register, with MSBit = 0 to indicate it's a read
   spi_write(reg_addr & 0x7f );
-  wait_us(100);
-  // wait_us(160); // tSRAD is 25, but 100us seems to be stable.
-  // wait_us(100); // tSRAD is 25, but 100us seems to be stable.
-  // read data
+  wait_us(100); // tSRAD is 25, but 100us seems to be stable.
+
   uint8_t data = spi_read();
 
   END_COM;
