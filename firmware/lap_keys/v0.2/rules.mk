@@ -30,9 +30,9 @@ BLUETOOTH_ENABLE = no       # Enable Bluetooth with the Adafruit EZ-Key HID
 RGBLIGHT_ENABLE = no        # Enable WS2812 RGB underlight.
 API_SYSEX_ENABLE = yes
 TAP_DANCE_ENABLE = no
+LTO_ENABLE = yes            # Link Time Optimization
 
 # Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE
 SLEEP_LED_ENABLE = no    # Breathing sleep LED during USB suspend
 
-EXTRAFLAGS += -flto
-QUANTUM_LIB_SRC += PMW3360.c drivers/avr/spi_master.c
+QUANTUM_LIB_SRC += PMW3360.c spi_master.c

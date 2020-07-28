@@ -1,10 +1,10 @@
 #include "v0.2.h"
 
-void matrix_init_kb(void) {
+void pointing_device_init(void) {
   pmw_begin();
 }
 
-void matrix_scan_kb(void) {
+void pointing_device_task(void) {
   struct PMW3360_DATA data = read_burst();
   // uprintf("", data);
   // uprintf("isMotion: %d isOnSurface: %d x: %d y: %d\n", data.isMotion, data.isOnSurface, data.dx, data.dy);
@@ -18,6 +18,6 @@ void matrix_scan_kb(void) {
     currentReport.y = (int)mdy;
     pointing_device_set_report(currentReport);
   }
-  matrix_scan_user();
+  pointing_device_send();
 }
 
