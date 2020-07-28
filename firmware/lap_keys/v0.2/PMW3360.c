@@ -318,8 +318,8 @@ void print_byte(uint8_t byte) {
 
 bool pmw_begin()
 {
-  setPinOutput(B6);
-  SPI_Init(SPI_OPTION);
+  //setPinOutput(B6);
+  spi_init();
   _inBurst = false;
   // hard reset
   END_COM; BEGIN_COM; END_COM; // ensure that the serial port is reset
@@ -393,7 +393,7 @@ struct PMW3360_DATA read_burst()
   }
 
   BEGIN_COM;
-  SPI_SendByte(REG_Motion_Burst);    
+  spi_write(REG_Motion_Burst);    
   wait_us(35); // waits for tSRAD
 
   struct PMW3360_DATA data;
@@ -403,12 +403,12 @@ struct PMW3360_DATA read_burst()
   data.dy = 0;
   data.mdx = 0;
 
-  data.motion = SPI_ReceiveByte();
-  SPI_SendByte(0x00); // skip Observation
-  data.dx = SPI_ReceiveByte();
-  data.mdx = SPI_ReceiveByte();
-  data.dy = SPI_ReceiveByte();
-  data.mdy = SPI_ReceiveByte();
+  data.motion = spi_read();
+  spi_write(0x00); // skip Observation
+  data.dx = spi_read();
+  data.mdx = spi_read();
+  data.dy = spi_read();
+  data.mdy = spi_read();
 
   END_COM;
 
@@ -450,12 +450,12 @@ uint8_t adns_read_reg(uint8_t reg_addr) {
 
   BEGIN_COM;
   // send adress of the register, with MSBit = 0 to indicate it's a read
-  SPI_SendByte(reg_addr & 0x7f );
+  spi_write(reg_addr & 0x7f );
   wait_us(100);
   // wait_us(160); // tSRAD is 25, but 100us seems to be stable.
   // wait_us(100); // tSRAD is 25, but 100us seems to be stable.
   // read data
-  uint8_t data = SPI_ReceiveByte();
+  uint8_t data = spi_read();
 
   END_COM;
 
@@ -475,9 +475,9 @@ void adns_write_reg(uint8_t reg_addr, uint8_t data) {
 
   BEGIN_COM;
   //send adress of the register, with MSBit = 1 to indicate it's a write
-  SPI_SendByte(reg_addr | 0x80 );
+  spi_write(reg_addr | 0x80 );
   //sent data
-  SPI_SendByte(data);
+  spi_write(data);
 
   wait_us(20); // tSCLK-NCS for write operation
   END_COM;
@@ -503,14 +503,14 @@ void adns_upload_firmware() {
   // write the SROM file (=firmware data)
   
   BEGIN_COM;
-  SPI_SendByte(REG_SROM_Load_Burst | 0x80); // write burst destination adress
+  spi_write(REG_SROM_Load_Burst | 0x80); // write burst destination adress
   wait_us(15);
 
   // send all bytes of the firmware
   unsigned char c;
   for (int i = 0; i < firmware_length; i++) {
     c = (unsigned char)pgm_read_byte(firmware_data + i);
-    SPI_SendByte(c);
+    spi_write(c);
     wait_us(15);
   }
   wait_us(200);

@@ -24,16 +24,12 @@
 
 #include <stdbool.h>
 #include <print.h>
-#include <LUFA/Drivers/Peripheral/SPI.h>
+#include "drivers/avr/spi_master.h"
 
 #include QMK_KEYBOARD_H
 
-/*
-#define SS_LOW(pin) (PORTB &= ~(1 << pin))
-#define SS_HIGH(pin) (PORTB |= (1 << pin))
-*/
-#define BEGIN_COM writePinLow(PMW_SS); wait_us(1)
-#define END_COM   wait_us(1); writePinHigh(PMW_SS)
+#define BEGIN_COM spi_start(PMW_SS, false, 3, 2); wait_us(1)
+#define END_COM   wait_us(1); spi_stop();
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 #define SPI_OPTION (SPI_SPEED_FCPU_DIV_2 | SPI_SCK_LEAD_FALLING | SPI_SAMPLE_TRAILING | SPI_ORDER_MSB_FIRST | SPI_MODE_MASTER)

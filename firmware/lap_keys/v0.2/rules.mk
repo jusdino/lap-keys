@@ -16,7 +16,7 @@ BOOTLOADER = qmk-dfu
 #   the appropriate keymap folder that will get included automatically
 #
 BOOTMAGIC_ENABLE = no       # Virtual DIP switch configuration
-MOUSEKEY_ENABLE = yes       # Mouse keys
+MOUSEKEY_ENABLE = no       # Mouse keys
 POINTING_DEVICE_ENABLE = yes
 EXTRAKEY_ENABLE = yes       # Audio control and System control
 CONSOLE_ENABLE = yes         # Console for debug
@@ -34,4 +34,5 @@ TAP_DANCE_ENABLE = no
 # Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE
 SLEEP_LED_ENABLE = no    # Breathing sleep LED during USB suspend
 
-QUANTUM_LIB_SRC += PMW3360.c
+EXTRAFLAGS += -flto
+QUANTUM_LIB_SRC += PMW3360.c drivers/avr/spi_master.c
