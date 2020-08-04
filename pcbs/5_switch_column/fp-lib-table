@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name footprints)(type KiCad)(uri /home/jusdino/Documents/3dprint/lap-keys/pcbs/5_switch_column/footprints.pretty)(options "")(descr ""))
+)
