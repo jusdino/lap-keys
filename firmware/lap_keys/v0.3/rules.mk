@@ -28,7 +28,7 @@ AUDIO_ENABLE = no           # Audio output on port C6
 UNICODE_ENABLE = yes         # Unicode
 BLUETOOTH_ENABLE = no       # Enable Bluetooth with the Adafruit EZ-Key HID
 RGBLIGHT_ENABLE = no        # Enable WS2812 RGB underlight.
-API_SYSEX_ENABLE = yes
+API_SYSEX_ENABLE = no
 TAP_DANCE_ENABLE = no
 
 # Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE
