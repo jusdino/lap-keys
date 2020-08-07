@@ -1,5 +1,4 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 #include "config_common.h"
 
@@ -28,8 +27,7 @@
 #define NO_ACTION_FUNCTION
 
 /* PMW3360 */
-#define SPI_DEBUG
+/*#define SPI_DEBUG*/
 #define PMW_SS B6
 #define CPI 1600
-
-#endif
+#define SPI_DIVISOR 2

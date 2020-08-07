@@ -27,7 +27,7 @@
 #define NO_ACTION_FUNCTION
 
 /* PMW3360 */
-#define SPI_DEBUG
+/*#define SPI_DEBUG*/
 #define PMW_SS B9
 #define CPI 1600
-
+#define SPI_DIVISOR 4

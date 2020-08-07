@@ -1,5 +1,4 @@
-#ifndef PROTOTYPE_H
-#define PROTOTYPE_H
+#pragma once
 
 #include "quantum.h"
 #include "pointing_device.h"
@@ -19,5 +18,3 @@
     { k30, k31, k32, k33, k34, k35, k36, k37, k38, k39, k310, k311 }, \
     { k40, k41, k42, k43, k44, k45, k46, k47, k48, k49, k410, k411 } \
 } 
-
-#endif

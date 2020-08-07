@@ -24,7 +24,7 @@
 #include "spi_master.h"
 
 
-#define BEGIN_COM spi_start(PMW_SS, false, 3, 2); wait_us(1)
+#define BEGIN_COM spi_start(PMW_SS, false, 3, SPI_DIVISOR); wait_us(1)
 #define END_COM   wait_us(1); spi_stop();
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))

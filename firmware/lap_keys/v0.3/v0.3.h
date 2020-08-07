@@ -2,10 +2,6 @@
 
 #include "quantum.h"
 #include "pointing_device.h"
-/*
-#include "api.h"
-#include "api_sysex.h"
-*/
 #include "PMW3360.h"
 
 #define LAYOUT( \

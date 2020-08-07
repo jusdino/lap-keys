@@ -19,16 +19,13 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef PMW3360_LIB
-#define PMW3360_LIB
-
-#include <stdbool.h>
-#include <print.h>
-#include "spi_master.h"
+#pragma once
 
 #include QMK_KEYBOARD_H
+#include "spi_master.h"
 
-#define BEGIN_COM spi_start(PMW_SS, false, 3, 2); wait_us(1)
+
+#define BEGIN_COM spi_start(PMW_SS, false, 3, SPI_DIVISOR); wait_us(1)
 #define END_COM   wait_us(1); spi_stop();
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
@@ -143,5 +140,3 @@ uint8_t adns_read_reg(uint8_t reg_addr);
 void adns_write_reg(uint8_t reg_addr, uint8_t data);
 void adns_upload_firmware(void);
 bool check_signature(void);
-
-#endif

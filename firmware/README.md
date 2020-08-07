@@ -10,6 +10,8 @@ This firmware will drive the 60-key (5x12) keyboards in this project. The versio
   Written for an [Elite-C MCU](https://keeb.io/products/elite-c-low-profile-version-usb-c-pro-micro-replacement-atmega32u4). Just keys. Very basic firmware with the keymap I worked out for the **split-sixty-percent** board.
 - **v0.2**:
   Written for an [Elite-C MCU](https://keeb.io/products/elite-c-low-profile-version-usb-c-pro-micro-replacement-atmega32u4). Introduces the driver for the PMW3360 sensor used for a trackball.
+- **v0.3**:
+  Written for a [Proton-C MCU](https://qmk.fm/proton-c/). Same features as v0.2.
 
 ## 3_by_3
 Firmware to test out a quick numpad-like prototype for learning purposes

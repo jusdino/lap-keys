@@ -20,4 +20,3 @@ void pointing_device_task(void) {
   }
   pointing_device_send();
 }
-
