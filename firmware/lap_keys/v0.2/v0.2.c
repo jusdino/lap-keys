@@ -6,8 +6,7 @@ void pointing_device_init(void) {
 
 void pointing_device_task(void) {
   struct PMW3360_DATA data = read_burst();
-  // uprintf("", data);
-  // uprintf("isMotion: %d isOnSurface: %d x: %d y: %d\n", data.isMotion, data.isOnSurface, data.dx, data.dy);
+
   if(data.isOnSurface && data.isMotion)
   {
 
