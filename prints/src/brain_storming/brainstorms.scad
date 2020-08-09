@@ -1,15 +1,10 @@
-include <switches.scad>;
-include <sockets.scad>;
-include <keycaps.scad>;
-include <abstractions.scad>;
+include <../components/switches.scad>;
+include <../components/sockets.scad>;
+include <../components/keycaps.scad>;
+include <../abstractions.scad>;
 include <bases.scad>;
 
-flat_ortho_grid(
-  x_count=6,
-  y_count=5,
-  spacing=19,
-  sockets=true,
-  pcb_pins=true);
+basic_tilted_right();
 
 module sixty_percent(pcb_pins=false) {
   flat_ortho_grid(12, 5, pcb_pins);
@@ -51,7 +46,7 @@ module basic_ortholinear_right(pcb_pins=false) {
 }
 
 module basic_tilted_right(pcb_pins=false) {
-  key_spacing = 20;
+  key_spacing = 19;
   curve_x_rad = 150;
   arc_length = key_spacing;
   dphi = (360*arc_length)/(2*PI*curve_x_rad);
@@ -61,43 +56,43 @@ module basic_tilted_right(pcb_pins=false) {
   theta = atan(2/key_spacing);
   coords = [
   // X                                  Y                   Z                   PHI,    THETA
-    [0,                                 -key_spacing,       0,                  0,      theta],
-    [key_spacing,                       -key_spacing,       0,                  0,      theta],
     [0*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
     [1*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
     [2*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
     [3*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
     [4*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
     [5*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
-    [6*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
     [0*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
     [1*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
     [2*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
     [3*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
     [4*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
     [5*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
-    [6*key_spacing-dx_from_phi(1*dphi), y_from_phi(1*dphi), z_from_phi(1*dphi), 1*dphi, theta],
     [0*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
     [1*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
     [2*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
     [3*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
     [4*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
     [5*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
-    [6*key_spacing-dx_from_phi(2*dphi), y_from_phi(2*dphi), z_from_phi(2*dphi), 2*dphi, theta],
     [0*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
     [1*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
     [2*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
     [3*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
     [4*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
     [5*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
-    [6*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
+    [0*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
+    [1*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
+    [2*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
+    [3*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
+    [4*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
+    [5*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
   ];
   corners = [
   // X                                  Y                   Z                   PHI,    THETA
-    [0,                                 -key_spacing,       0,                  0,      theta],
-    [0*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
-    [6*key_spacing-dx_from_phi(3*dphi), y_from_phi(3*dphi), z_from_phi(3*dphi), 3*dphi, theta],
-    [6*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
+    [0,                                 0,                  0,                  0,      theta],
+    [0*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
+    [5*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
+    [5*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
   ];
 
   map_over_xyzpt(coords) {
