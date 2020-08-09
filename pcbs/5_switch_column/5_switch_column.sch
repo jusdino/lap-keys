@@ -76,7 +76,7 @@ Wire Wire Line
 Wire Wire Line
 	4300 5900 4500 5900
 $Comp
-L 5_switch_column-rescue:CherryMXDiode-project S1
+L symbols:CherryMXDiode S1
 U 1 1 5F2D8ACD
 P 4700 3450
 F 0 "S1" H 4988 3599 50  0000 L CNN
@@ -87,7 +87,7 @@ F 3 "" H 4700 3450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 5_switch_column-rescue:CherryMXDiode-project S2
+L symbols:CherryMXDiode S2
 U 1 1 5F27C6D7
 P 4700 4050
 F 0 "S2" H 4988 4199 50  0000 L CNN
@@ -98,7 +98,7 @@ F 3 "" H 4700 4050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 5_switch_column-rescue:CherryMXDiode-project S3
+L symbols:CherryMXDiode S3
 U 1 1 5F27CC87
 P 4700 4650
 F 0 "S3" H 4988 4799 50  0000 L CNN
@@ -109,7 +109,7 @@ F 3 "" H 4700 4650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 5_switch_column-rescue:CherryMXDiode-project S4
+L symbols:CherryMXDiode S4
 U 1 1 5F27D1C8
 P 4700 5250
 F 0 "S4" H 4988 5399 50  0000 L CNN
@@ -120,7 +120,7 @@ F 3 "" H 4700 5250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 5_switch_column-rescue:CherryMXDiode-project S5
+L symbols:CherryMXDiode S5
 U 1 1 5F27D70F
 P 4700 5850
 F 0 "S5" H 4988 5999 50  0000 L CNN
@@ -133,7 +133,7 @@ $EndComp
 Wire Wire Line
 	4900 5200 4900 5300
 $Comp
-L 5_switch_column-rescue:6PinHeader-project U1
+L symbols:6PinHeader U1
 U 1 1 5F27F443
 P 4000 3000
 F 0 "U1" H 3957 3203 50  0000 C CNN
