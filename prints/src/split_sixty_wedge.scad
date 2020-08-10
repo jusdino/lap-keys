@@ -18,8 +18,8 @@ switch_column_plate_pcb_holder_overreach_dz = 1;
 switch_column_plate_pcb_holder_dz = switch_column_plate_pcb_dz + switch_column_plate_pcb_holder_overreach_dz;
 
 
-split_sixty_wedge(pcbs=true);
-module split_sixty_wedge(keys_and_caps=false, sockets=false, pcbs=false, pcb_pins=false) {
+split_sixty_wedge(plates=true, pcbs=true);
+module split_sixty_wedge(keys_and_caps=false, plates=false, pcbs=false) {
   e = 0.01;
 
   x_count = 6;
@@ -45,7 +45,7 @@ module split_sixty_wedge(keys_and_caps=false, sockets=false, pcbs=false, pcb_pin
     [(x_count-1)*spacing-minus_x_dx, -e, -wall_thickness]];
 
   wedge_mirror() {
-    switch_plate(x_count, y_count, spacing, pcbs);
+    switch_base(x_count=x_count, y_count=y_count, spacing=spacing, plate=plates, pcbs=pcbs);
   }
   
   module wedge_mirror() {
@@ -61,15 +61,72 @@ module split_sixty_wedge(keys_and_caps=false, sockets=false, pcbs=false, pcb_pin
 
   module wedge_rotate() {
     rotate([0, y_rotation, z_rotation]) {
-      //translate([cherrymx_base_base_dx/2, -bottom_dy-cherrymx_base_base_dy/2, -cherrymx_base_base_z]) {
-        children();
-      //}
+      children();
     }
   }
 }
 
 
-//switch_plate(pcb=true);
+//switch_base(x_count=6, y_count=5, spacing=19, plate=true, pcb=true);
+module switch_base(x_count=6, y_count=5, spacing=19, plate=false, pcbs=false) {
+  e = 0.01;
+
+  hull_dz = cherrymx_socket_hull_dz;
+  pcb_dz = switch_column_plate_pcb_dz;
+  pcb_holder_overreach_dz = switch_column_plate_pcb_holder_overreach_dz;
+
+  plate_dz = hull_dz + pcb_dz + pcb_holder_overreach_dz;
+  plate_dx = spacing * x_count;
+  plate_dy = spacing * y_count;
+
+  base_thickness = 1;
+  base_dx = plate_dx + 2*base_thickness;
+  base_dy = plate_dy + 2*base_thickness;
+  base_dz = base_thickness;
+  base_bottom_thickness = 3;
+
+  translate([0, -base_dy, 0]) {
+    difference() {
+      union() {
+        // Main frame
+        cube([base_dx, base_dy, base_dz]);
+        cube([base_thickness, base_dy, plate_dz+base_thickness*2]);
+        cube([base_dx, base_thickness, (plate_dz+base_thickness)/4]);
+        translate([base_dx-base_thickness, 0, 0]) {
+          cube([base_thickness, base_dy, plate_dz+base_thickness*2]);
+        }
+        // Overreach tabs
+        translate([base_thickness, 0, plate_dz+1.5*base_thickness]) {
+          rotate([-90, 0, 0]) {
+            cylinder(h=base_dy, d=base_thickness, $fn=8);
+            translate([plate_dx, 0, 0]) {
+              cylinder(h=base_dy, d=base_thickness, $fn=8);
+            }
+          }
+        }
+      }
+      // Bottom subtraction
+      translate([base_bottom_thickness, base_bottom_thickness, -e]) {
+        cube([base_dx-2*base_bottom_thickness, base_dy-base_bottom_thickness*2, base_thickness+2*e]);
+      }
+    }
+  }
+  // Strap over back
+  translate([0, -base_thickness, plate_dz-base_thickness]) {
+    cube([base_dx, base_thickness, 3*base_thickness]);
+  }
+  for (i=[1:x_count-1]) {
+    translate([i*spacing-base_thickness+base_thickness, -base_thickness, 0]) {
+      cube([2*base_thickness, base_thickness, plate_dz+2*base_thickness]);
+    }
+  }
+  if (plate) {
+    translate([base_thickness, -base_thickness, base_dz+2*e]) {
+      switch_plate(x_count=x_count, y_count=y_count, spacing=spacing, pcb=pcbs);
+    }
+  }
+}
+
 module switch_plate(x_count=6, y_count=5, spacing=19, pcb=false) {
   hull_dz = cherrymx_socket_hull_dz;
   pcb_dz = switch_column_plate_pcb_dz;
