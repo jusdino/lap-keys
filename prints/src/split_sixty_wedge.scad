@@ -6,6 +6,9 @@ include <components/sockets.scad>;
 include <components/keycaps.scad>;
 include <abstractions.scad>;
 
+split_sixty_wedge_x_count = 6;
+split_sixty_wedge_y_count = 5;
+split_sixty_wedge_spacing = 19;
 
 switch_column_plate_pcb_dx = 16.5;
 switch_column_plate_pcb_dy = 99.7;
@@ -17,35 +20,85 @@ switch_column_plate_pcb_headroom_dz = 2;
 switch_column_plate_pcb_holder_overreach_dz = 1;
 switch_column_plate_pcb_holder_dz = switch_column_plate_pcb_dz + switch_column_plate_pcb_holder_overreach_dz;
 
+switch_base_thickness = 1;
+switch_base_bottom_width = 3;
+switch_base_hull_dz = cherrymx_socket_hull_dz;
+switch_base_pcb_dz = switch_column_plate_pcb_dz;
+switch_base_pcb_holder_overreach_dz = switch_column_plate_pcb_holder_overreach_dz;
 
-split_sixty_wedge(plates=true, pcbs=true);
-module split_sixty_wedge(keys_and_caps=false, plates=false, pcbs=false) {
+switch_base_plate_dz = switch_base_hull_dz + switch_base_pcb_dz + switch_column_plate_pcb_holder_overreach_dz;
+switch_base_plate_dx = split_sixty_wedge_spacing * split_sixty_wedge_x_count;
+switch_base_plate_dy = split_sixty_wedge_spacing * split_sixty_wedge_y_count;
+
+switch_base_dx = switch_base_plate_dx + 2*switch_base_thickness;
+switch_base_dy = switch_base_plate_dy + 2*switch_base_thickness;
+switch_base_dz = switch_base_thickness;
+
+
+split_sixty_wedge(
+  x_count=split_sixty_wedge_x_count,
+  y_count=split_sixty_wedge_y_count,
+  spacing=split_sixty_wedge_spacing,
+  keys_and_caps=true,
+  plates=true,
+  pcbs=true);
+module split_sixty_wedge(x_count, y_count, spacing, keys_and_caps=false, plates=false, pcbs=false) {
   e = 0.01;
 
-  x_count = 6;
-  y_count = 5;
-  spacing = 19;
-  coords = [for (x=0;x<x_count;x=x+1) for (y=0;y<y_count;y=y+1) [x, y, 0]] * spacing;
-  corners = [[0, 0, 0], [0, y_count-1, 0], [x_count-1, y_count-1, 0], [x_count-1, 0, 0]] * spacing;
-
-  bottom_dx = spacing*(x_count-1);
-  bottom_dy = spacing*(y_count-1);
+  base_color = [80/255, 100/255, 200/255];
+  base_thickness = switch_base_thickness;
+  base_bottom_width = switch_base_bottom_width;
+  base_dx = switch_base_dx;
+  base_dy = switch_base_dy;
 
   y_rotation = 50;
   z_rotation = 11;
 
-  wall_thickness = 2;
+  bottom_connector_bottom_z = -base_dx * sin(y_rotation);
+  bottom_connector_top_z = -(base_dx-base_bottom_width) * sin(y_rotation);
+  bottom_connector_dz = bottom_connector_top_z - bottom_connector_bottom_z;
+  bottom_connector_front_y = base_dx * cos(y_rotation) * sin(z_rotation);
 
-  plus_x_dx = wall_thickness*tan(y_rotation);
-  minus_x_dx = wall_thickness*(1/tan(y_rotation) + 1/sin(y_rotation));
-  subtraction_corners = [
-    [plus_x_dx, -e, -wall_thickness],
-    [plus_x_dx, (y_count-1)*spacing+1, -wall_thickness],
-    [(x_count-1)*spacing-minus_x_dx, (y_count-1)*spacing+1, -wall_thickness],
-    [(x_count-1)*spacing-minus_x_dx, -e, -wall_thickness]];
+  snap_hole_rad = 3;
+  mcu_connectors_shift_dy = 5 + snap_hole_rad;
+  mcu_connectors_dx = 10 + 2*snap_hole_rad;
+  mcu_connectors_dy = 34 + 2*snap_hole_rad;
+
+  // wall_thickness = 2;
+  // plus_x_dx = wall_thickness*tan(y_rotation);
+  // minus_x_dx = wall_thickness*(1/tan(y_rotation) + 1/sin(y_rotation));
 
   wedge_mirror() {
-    switch_base(x_count=x_count, y_count=y_count, spacing=spacing, plate=plates, pcbs=pcbs);
+    switch_base(x_count=x_count, y_count=y_count, spacing=spacing, base_color=base_color, plate=plates, pcbs=pcbs, keys_and_caps=keys_and_caps);
+  }
+  color(base_color) {
+    // Top connector plate
+    hull() {
+      wedge_mirror() {
+        translate([0, -base_dy, 0]) {
+          cube([base_bottom_width, base_dy, e]);
+        }
+      }
+    }
+    // Bottom connector plate
+    difference() {
+      hull() {
+        wedge_mirror() {
+          translate([base_dx-base_bottom_width, -base_dy, 0]) {
+            cube([base_bottom_width, base_dy, e]);
+          }
+        }
+      }
+      // MCU connector snap holes
+      translate([0, bottom_connector_front_y, bottom_connector_bottom_z+bottom_connector_dz/2]) {
+        translate([0, -mcu_connectors_shift_dy, 0]) {
+          translate([mcu_connectors_dx/2, 0, 0]) sphere(r=3, $fn=20);
+          translate([-mcu_connectors_dx/2, 0, 0]) sphere(r=3, $fn=20);
+          translate([mcu_connectors_dx/2, -mcu_connectors_dy, 0]) sphere(r=3, $fn=20);
+          translate([-mcu_connectors_dx/2, -mcu_connectors_dy, 0]) sphere(r=3, $fn=20);
+        }
+      }
+    }
   }
   
   module wedge_mirror() {
@@ -67,67 +120,70 @@ module split_sixty_wedge(keys_and_caps=false, plates=false, pcbs=false) {
 }
 
 
-//switch_base(x_count=6, y_count=5, spacing=19, plate=true, pcb=true);
-module switch_base(x_count=6, y_count=5, spacing=19, plate=false, pcbs=false) {
+//switch_base(x_count=6, y_count=5, spacing=19, plate=true, pcbs=true);
+module switch_base(x_count=6, y_count=5, spacing=19, base_color="white", plate=false, pcbs=false, keys_and_caps=false) {
   e = 0.01;
 
   hull_dz = cherrymx_socket_hull_dz;
   pcb_dz = switch_column_plate_pcb_dz;
   pcb_holder_overreach_dz = switch_column_plate_pcb_holder_overreach_dz;
 
-  plate_dz = hull_dz + pcb_dz + pcb_holder_overreach_dz;
-  plate_dx = spacing * x_count;
-  plate_dy = spacing * y_count;
+  plate_dz = switch_base_plate_dz;
+  plate_dx = switch_base_plate_dx;
+  plate_dy = switch_base_plate_dy;
 
-  base_thickness = 1;
-  base_dx = plate_dx + 2*base_thickness;
-  base_dy = plate_dy + 2*base_thickness;
-  base_dz = base_thickness;
-  base_bottom_thickness = 3;
+  base_thickness = switch_base_thickness;
+  base_dx = switch_base_dx;
+  base_dy = switch_base_dy;
+  base_dz = switch_base_dz;
+  base_bottom_width = switch_base_bottom_width;
 
-  translate([0, -base_dy, 0]) {
-    difference() {
-      union() {
-        // Main frame
-        cube([base_dx, base_dy, base_dz]);
-        cube([base_thickness, base_dy, plate_dz+base_thickness*2]);
-        cube([base_dx, base_thickness, (plate_dz+base_thickness)/4]);
-        translate([base_dx-base_thickness, 0, 0]) {
+  color(base_color) {
+    translate([0, -base_dy, 0]) {
+      difference() {
+        union() {
+          // Main frame
+          cube([base_dx, base_dy, base_dz]);
           cube([base_thickness, base_dy, plate_dz+base_thickness*2]);
-        }
-        // Overreach tabs
-        translate([base_thickness, 0, plate_dz+1.5*base_thickness]) {
-          rotate([-90, 0, 0]) {
-            cylinder(h=base_dy, d=base_thickness, $fn=8);
-            translate([plate_dx, 0, 0]) {
+          cube([base_dx, base_thickness, (plate_dz+base_thickness)/4]);
+          translate([base_dx-base_thickness, 0, 0]) {
+            cube([base_thickness, base_dy, plate_dz+base_thickness*2]);
+          }
+          // Overreach tabs
+          translate([base_thickness, 0, plate_dz+1.5*base_thickness]) {
+            rotate([-90, 0, 0]) {
               cylinder(h=base_dy, d=base_thickness, $fn=8);
+              translate([plate_dx, 0, 0]) {
+                cylinder(h=base_dy, d=base_thickness, $fn=8);
+              }
             }
           }
         }
-      }
-      // Bottom subtraction
-      translate([base_bottom_thickness, base_bottom_thickness, -e]) {
-        cube([base_dx-2*base_bottom_thickness, base_dy-base_bottom_thickness*2, base_thickness+2*e]);
+        // Bottom subtraction
+        translate([base_bottom_width, base_bottom_width, -e]) {
+          cube([base_dx-2*base_bottom_width, base_dy-base_bottom_width*2, base_thickness+2*e]);
+        }
       }
     }
-  }
-  // Strap over back
-  translate([0, -base_thickness, plate_dz-base_thickness]) {
-    cube([base_dx, base_thickness, 3*base_thickness]);
-  }
-  for (i=[1:x_count-1]) {
-    translate([i*spacing-base_thickness+base_thickness, -base_thickness, 0]) {
-      cube([2*base_thickness, base_thickness, plate_dz+2*base_thickness]);
+    // Strap over back
+    translate([0, -base_thickness, plate_dz-base_thickness]) {
+      cube([base_dx, base_thickness, 3*base_thickness]);
+    }
+    for (i=[1:x_count-1]) {
+      translate([i*spacing-base_thickness+base_thickness, -base_thickness, 0]) {
+        cube([2*base_thickness, base_thickness, plate_dz+2*base_thickness]);
+      }
     }
   }
   if (plate) {
     translate([base_thickness, -base_thickness, base_dz+2*e]) {
-      switch_plate(x_count=x_count, y_count=y_count, spacing=spacing, pcb=pcbs);
+      switch_plate(x_count=x_count, y_count=y_count, spacing=spacing, pcb=pcbs, keys_and_caps=keys_and_caps);
     }
   }
 }
 
-module switch_plate(x_count=6, y_count=5, spacing=19, pcb=false) {
+//switch_plate(x_count=6, y_count=5, spacing=19, pcb=false);
+module switch_plate(x_count=6, y_count=5, spacing=19, pcb=false, keys_and_caps) {
   hull_dz = cherrymx_socket_hull_dz;
   pcb_dz = switch_column_plate_pcb_dz;
   pcb_holder_overreach_dz = switch_column_plate_pcb_holder_overreach_dz;
@@ -138,13 +194,13 @@ module switch_plate(x_count=6, y_count=5, spacing=19, pcb=false) {
   translate([spacing/2, -(y_count-0.5)*spacing, plate_dz]) {
     for (i=[0:x_count-1]) {
       translate([spacing*i, 0, 0]) {
-        switch_column_plate(count=y_count, spacing=spacing, pcb=pcb);
+        switch_column_plate(count=y_count, spacing=spacing, pcb=pcb, keys_and_caps=keys_and_caps);
       }
     }
   }
 }
 
-module switch_column_plate(count=5, spacing=19, pcb=false) {
+module switch_column_plate(count=5, spacing=19, pcb=false, keys_and_caps=false) {
   e = 0.01;
 
   pcb_dx = switch_column_plate_pcb_dx;
@@ -203,6 +259,10 @@ module switch_column_plate(count=5, spacing=19, pcb=false) {
           }
         }
       }
+    }
+    if (keys_and_caps) {
+      cherrymx(pcb_pins=true);
+      keycap_1u();
     }
   }
 }

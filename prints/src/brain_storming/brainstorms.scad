@@ -56,6 +56,9 @@ module basic_tilted_right(pcb_pins=false) {
   theta = atan(2/key_spacing);
   coords = [
   // X                                  Y                   Z                   PHI,    THETA
+    [-1*key_spacing-dx_from_phi(-1),    y_from_phi(-1*dphi),z_from_phi(0),      0,      theta],
+    [0*key_spacing-dx_from_phi(0),      y_from_phi(-1*dphi),z_from_phi(0),      0,      theta],
+    [1*key_spacing-dx_from_phi(0),      y_from_phi(-1*dphi),z_from_phi(0),      0,      theta],
     [0*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
     [1*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
     [2*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
@@ -89,7 +92,7 @@ module basic_tilted_right(pcb_pins=false) {
   ];
   corners = [
   // X                                  Y                   Z                   PHI,    THETA
-    [0,                                 0,                  0,                  0,      theta],
+    [-1*key_spacing-dx_from_phi(0*dphi),y_from_phi(-1*dphi),z_from_phi(0*dphi), 0*dphi, theta],
     [0*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
     [5*key_spacing-dx_from_phi(4*dphi), y_from_phi(4*dphi), z_from_phi(4*dphi), 4*dphi, theta],
     [5*key_spacing-dx_from_phi(0),      y_from_phi(0),      z_from_phi(0),      0,      theta],
