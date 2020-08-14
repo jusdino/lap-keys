@@ -20,7 +20,7 @@ switch_column_plate_pcb_headroom_dz = 2;
 switch_column_plate_pcb_holder_overreach_dz = 1;
 switch_column_plate_pcb_holder_dz = switch_column_plate_pcb_dz + switch_column_plate_pcb_holder_overreach_dz;
 
-switch_base_thickness = 1;
+switch_base_thickness = 1.5;
 switch_base_bottom_width = 3;
 switch_base_hull_dz = cherrymx_socket_hull_dz;
 switch_base_pcb_dz = switch_column_plate_pcb_dz;
@@ -30,8 +30,10 @@ switch_base_plate_dz = switch_base_hull_dz + switch_base_pcb_dz + switch_column_
 switch_base_plate_dx = split_sixty_wedge_spacing * split_sixty_wedge_x_count;
 switch_base_plate_dy = split_sixty_wedge_spacing * split_sixty_wedge_y_count;
 
+switch_base_tolerance_dy = 0.5;
+
 switch_base_dx = switch_base_plate_dx + 2*switch_base_thickness;
-switch_base_dy = switch_base_plate_dy + 2*switch_base_thickness;
+switch_base_dy = switch_base_plate_dy + 2*switch_base_thickness + switch_base_tolerance_dy;
 switch_base_dz = switch_base_thickness;
 
 
@@ -39,9 +41,9 @@ split_sixty_wedge(
   x_count=split_sixty_wedge_x_count,
   y_count=split_sixty_wedge_y_count,
   spacing=split_sixty_wedge_spacing,
-  keys_and_caps=true,
-  plates=true,
-  pcbs=true);
+  keys_and_caps=false,
+  plates=false,
+  pcbs=false);
 module split_sixty_wedge(x_count, y_count, spacing, keys_and_caps=false, plates=false, pcbs=false) {
   e = 0.01;
 
@@ -63,10 +65,6 @@ module split_sixty_wedge(x_count, y_count, spacing, keys_and_caps=false, plates=
   mcu_connectors_shift_dy = 5 + snap_hole_rad;
   mcu_connectors_dx = 10 + 2*snap_hole_rad;
   mcu_connectors_dy = 34 + 2*snap_hole_rad;
-
-  // wall_thickness = 2;
-  // plus_x_dx = wall_thickness*tan(y_rotation);
-  // minus_x_dx = wall_thickness*(1/tan(y_rotation) + 1/sin(y_rotation));
 
   wedge_mirror() {
     switch_base(x_count=x_count, y_count=y_count, spacing=spacing, base_color=base_color, plate=plates, pcbs=pcbs, keys_and_caps=keys_and_caps);
@@ -165,13 +163,12 @@ module switch_base(x_count=6, y_count=5, spacing=19, base_color="white", plate=f
         }
       }
     }
-    // Strap over back
-    translate([0, -base_thickness, plate_dz-base_thickness]) {
-      cube([base_dx, base_thickness, 3*base_thickness]);
-    }
-    for (i=[1:x_count-1]) {
-      translate([i*spacing-base_thickness+base_thickness, -base_thickness, 0]) {
-        cube([2*base_thickness, base_thickness, plate_dz+2*base_thickness]);
+    // Front
+    translate([0, -base_thickness, ]) {
+      cube([base_dx, base_thickness, base_dz+pcb_holder_overreach_dz/2]);
+      cube([base_thickness*1.5, base_thickness, plate_dz+base_thickness*2]);
+      translate([base_dx-base_thickness*1.5, 0, 0]) {
+        cube([base_thickness*1.5, base_thickness, plate_dz+base_thickness*2]);
       }
     }
   }
