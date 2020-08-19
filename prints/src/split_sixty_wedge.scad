@@ -2,6 +2,7 @@
 // First step towards a more functional design: Adding a PCB, reducing space for hand-wires.
 
 include <components/switches.scad>;
+include <components/mcus.scad>;
 include <components/sockets.scad>;
 include <components/keycaps.scad>;
 include <abstractions.scad>;
@@ -12,8 +13,9 @@ split_sixty_wedge(
   switch_spacing=19,
   keys_and_caps=true,
   plates=true,
-  pcbs=true);
-module split_sixty_wedge(x_count, y_count, switch_spacing, keys_and_caps=false, plates=false, pcbs=false) {
+  pcbs=true,
+  mcu=true);
+module split_sixty_wedge(x_count, y_count, switch_spacing, keys_and_caps=false, plates=false, pcbs=false, mcu=false) {
   e = 0.01;
 
   // MULTI-MODULE VARS
@@ -98,6 +100,9 @@ module split_sixty_wedge(x_count, y_count, switch_spacing, keys_and_caps=false, 
       }
     }
   }
+  translate([0, bottom_connector_front_y, bottom_connector_top_z]) {
+    elite_c_mount(mcu=mcu);
+  }
   
   module wedge_mirror() {
     wedge_rotate() {
@@ -113,6 +118,69 @@ module split_sixty_wedge(x_count, y_count, switch_spacing, keys_and_caps=false, 
   module wedge_rotate() {
     rotate([0, y_rotation, z_rotation]) {
       children();
+    }
+  }
+
+  module elite_c_mount(mcu=false) {
+    pcb_dx = elite_c_pcb_dx;
+    pcb_dy = elite_c_pcb_dy;
+    pcb_dz = elite_c_pcb_dz;
+
+    usb_dx = elite_c_usb_dx;
+    usb_dy = elite_c_usb_dy;
+    usb_dz = elite_c_usb_dz;
+
+    usb_connector_space_dz = 7.0;
+    mcu_y = -mcu_connectors_shift_dy - snap_hole_rad;
+    mcu_z = pcb_dz + usb_dz/2 + usb_connector_space_dz/2;
+
+    under_support_thickness = 0.6;
+    under_support_dz = 1.5;
+
+    if (mcu) {
+      translate([0, mcu_y, mcu_z]) {
+        rotate([180, 0, 0]) {
+          elite_c();
+        }
+      }
+    }
+    // Under-pcb support
+    translate([0, mcu_y, 0]) {
+      translate([-pcb_dx/2, -pcb_dy, 0]) {
+        difference() {
+          cube([pcb_dx, pcb_dy, mcu_z-pcb_dz]);
+          hull() {
+            translate([under_support_thickness, under_support_thickness, mcu_z-pcb_dz]) {
+              cube([pcb_dx-2*under_support_thickness, pcb_dy-2*under_support_thickness, e]);
+            }
+            translate([under_support_thickness+under_support_dz, under_support_thickness+under_support_dz, under_support_dz]) {
+              cube([pcb_dx-2*under_support_thickness-2*under_support_dz, pcb_dy-2*under_support_thickness-2*under_support_dz, e]);
+            }
+          }
+          translate([-e, under_support_thickness+under_support_dz, under_support_dz]) {
+            cube([pcb_dx+2*e, pcb_dy-2*under_support_thickness-2*under_support_dz, mcu_z-pcb_dz-under_support_dz+e]);
+          }
+          translate([pcb_dx/2-usb_dx/2, pcb_dy-under_support_thickness-under_support_dz, mcu_z-pcb_dz-usb_dz]) {
+            translate([usb_dz/2, 0, 0]) {
+              cube([usb_dx-usb_dz, under_support_thickness+under_support_dz+e, usb_dz+e]);
+              translate([0, 0, usb_dz/2]) {
+                rotate([-90, 0, 0]) cylinder(d=usb_dz, h=under_support_thickness+under_support_dz+e, $fn=16);
+              }
+            }
+            translate([0, 0, usb_dz/2]) {
+              cube([usb_dz/2+e, under_support_thickness+under_support_dz+e, usb_dz/2+e]);
+            }
+            translate([usb_dx-usb_dz/2, 0, 0]) {
+              translate([0, 0, usb_dz/2]) {
+                rotate([-90, 0, 0]) cylinder(d=usb_dz, h=under_support_thickness+under_support_dz+e, $fn=16);
+              }
+              translate([0, 0, usb_dz/2]) {
+                cube([usb_dz/2+e, under_support_thickness+under_support_dz+e, usb_dz/2+e]);
+              }
+            }
+          }
+        }
+      }
     }
   }
 
