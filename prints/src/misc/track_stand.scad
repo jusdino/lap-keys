@@ -1,4 +1,3 @@
-track_stand();
 
 module track_stand() {
   e = 0.01;
@@ -24,10 +23,10 @@ module track_stand() {
   optics_cavity_dy = 9.0;
   optics_cavity_dz = hole_dia/2;
 
-  *translate([0, 0, ball_dia/2]) {
+  translate([0, 0, ball_dia/2]) {
     color("DarkRed") sphere(d=ball_dia);
   }
-  *PMW3360_assembly();
+  PMW3360_assembly();
   translate([-hole_dia/2, -hole_dia/2, 0]) {
     color("MediumBlue") {
       // Main body
