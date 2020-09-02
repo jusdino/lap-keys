@@ -6,7 +6,14 @@
 keys_and_caps=true;
 plates=true;
 pcbs=true;
+
+mcu_mount=true;
 mcu=true;
+
+trackball_mount=true;
+trackball=true;
+sensor=true;
+bearings=true;
 
 keyboard_x_count = 6;
 keyboard_y_count = 5;
@@ -35,6 +42,10 @@ keyboard_bottom_connector_front_y = switch_base_dx * cos(keyboard_y_rotation) * 
 keyboard_mcu_connectors_shift_dy = 5 + keyboard_snap_hole_rad;
 keyboard_mcu_connectors_dx = 10 + 2*keyboard_snap_hole_rad;
 keyboard_mcu_connectors_dy = 34 + 2*keyboard_snap_hole_rad;
+
+keyboard_top_dx = switch_base_dy*sin(keyboard_z_rotation)*2;
+keyboard_top_dy = switch_base_dy*cos(keyboard_z_rotation);
+keyboard_top_dz = switch_base_bottom_width * sin(keyboard_y_rotation);
 
 include <trackball_mount.scad>;
 include <elite_c_mount.scad>;
@@ -67,15 +78,20 @@ module keyboard() {
   mcu_connectors_dy = keyboard_mcu_connectors_dy;
 
   wedge_mirror() {
-    switch_base(x_count=x_count, y_count=y_count, switch_spacing=switch_spacing, base_color=base_color, plate=plates, pcbs=pcbs, keys_and_caps=keys_and_caps);
+    switch_base();
   }
   color(base_color) {
     // Top connector plate
-    hull() {
-      wedge_mirror() {
-        translate([0, -base_dy, 0]) {
-          cube([base_bottom_width, base_dy, e]);
+    difference() {
+      hull() {
+        wedge_mirror() {
+          translate([0, -base_dy, 0]) {
+            cube([base_bottom_width, base_dy, e]);
+          }
         }
+      }
+      translate([0, -keyboard_top_dy, 0]) {
+        trackball_mount_cutout();
       }
     }
     // Bottom connector plate
@@ -98,9 +114,17 @@ module keyboard() {
       }
     }
   }
-  translate([0, bottom_connector_front_y, bottom_connector_top_z]) {
-    elite_c_mount(mcu);
+  if (trackball_mount) {
+    translate([0, -keyboard_top_dy, 0]) {
+      trackball_mount();
+    }
   }
+  if (mcu_mount) {
+    translate([0, bottom_connector_front_y, bottom_connector_top_z]) {
+      elite_c_mount(mcu);
+    }
+  }
+
   
   module wedge_mirror() {
     wedge_rotate() {
@@ -119,9 +143,15 @@ module keyboard() {
     }
   }
 
-  //switch_base(x_count=6, y_count=5, switch_spacing=19, plate=true, pcbs=true);
-  module switch_base(x_count=6, y_count=5, switch_spacing=19, base_color="white", plate=false, pcbs=false, keys_and_caps=false) {
+  //switch_base();
+  module switch_base() {
     e = 0.01;
+
+    x_count = keyboard_x_count;
+    y_count = keyboard_y_count;
+    switch_spacing = keyboard_switch_spacing;
+    y_rotation = keyboard_y_rotation;
+    z_rotation = keyboard_z_rotation;
 
     pcb_dz = switch_column_plate_pcb_dz;
     pcb_holder_overreach_dz = switch_column_plate_pcb_holder_overreach_dz;
@@ -172,9 +202,9 @@ module keyboard() {
         }
       }
     }
-    if (plate) {
+    if (plates) {
       translate([base_thickness, -base_thickness, base_dz+2*e]) {
-        switch_plate(x_count=x_count, y_count=y_count, switch_spacing=switch_spacing, pcb=pcbs, keys_and_caps=keys_and_caps);
+        switch_plate();
       }
     }
 

@@ -19,21 +19,27 @@ switch_plate_dx = keyboard_switch_spacing * keyboard_x_count;
 switch_plate_dy = keyboard_switch_spacing * keyboard_y_count;
 switch_plate_dz = cherrymx_socket_hull_dz + switch_column_plate_pcb_dz + switch_column_plate_pcb_holder_overreach_dz;
 
-//switch_plate(x_count=6, y_count=5, switch_spacing=19, pcb=false);
-module switch_plate(x_count, y_count, switch_spacing, pcb=false, keys_and_caps=false) {
+//switch_plate();
+module switch_plate() {
+  x_count = keyboard_x_count;
+  y_count = keyboard_y_count;
+  switch_spacing = keyboard_switch_spacing;
+
   plate_dz = cherrymx_socket_hull_dz + switch_column_plate_pcb_dz + switch_column_plate_pcb_holder_overreach_dz;
 
 
   translate([switch_spacing/2, -(y_count-0.5)*switch_spacing, plate_dz]) {
     for (i=[0:x_count-1]) {
       translate([switch_spacing*i, 0, 0]) {
-        switch_column_plate(count=y_count, switch_spacing=switch_spacing, pcb=pcb, keys_and_caps=keys_and_caps);
+        switch_column_plate();
       }
     }
   }
 
-  module switch_column_plate(count, switch_spacing, pcb=false, keys_and_caps=false) {
+  module switch_column_plate() {
     e = 0.01;
+
+    count = y_count;
 
     pcb_dx = switch_column_plate_pcb_dx;
     pcb_dy = switch_column_plate_pcb_dy;
@@ -58,7 +64,7 @@ module switch_plate(x_count, y_count, switch_spacing, pcb=false, keys_and_caps=f
         cherrymx_plate_pcb();
       }
     }
-    if (pcb) {
+    if (pcbs) {
       color("green") {
         translate([-pcb_dx/2, switch_column_plate_pcb_y, -hull_dz-pcb_dz]) {
           cube([pcb_dx, pcb_dy, pcb_dz]);
