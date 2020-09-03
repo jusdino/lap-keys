@@ -11,9 +11,9 @@ mcu_mount=true;
 mcu=true;
 
 trackball_mount=true;
-trackball=true;
-sensor=true;
-bearings=true;
+trackball=false;
+sensor=false;
+bearings=false;
 
 keyboard_x_count = 6;
 keyboard_y_count = 5;
