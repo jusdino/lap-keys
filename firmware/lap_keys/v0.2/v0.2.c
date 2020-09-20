@@ -10,8 +10,8 @@ void pointing_device_task(void) {
   if(data.isOnSurface && data.isMotion)
   {
 
-    int16_t mdx = constrain(data.dx, -127, 127);
-    int16_t mdy = constrain(data.dy, -127, 127);
+    int16_t mdy = constrain(data.dx, -127, 127);
+    int16_t mdx = -constrain(data.dy, -127, 127);
     report_mouse_t currentReport = pointing_device_get_report();
     currentReport.x = (int)mdx;
     currentReport.y = (int)mdy;

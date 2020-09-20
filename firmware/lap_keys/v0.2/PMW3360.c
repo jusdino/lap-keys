@@ -372,7 +372,9 @@ struct PMW3360_DATA read_burst()
 {
   if(!_inBurst)
   {
+#ifdef SPI_DEBUG
     uprintf("burst on");
+#endif
     adns_write_reg(REG_Motion_Burst, 0x00);
     _inBurst = true;    
   }
