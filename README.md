@@ -6,7 +6,7 @@ This is a design prototype in progress for a new keyboard that will hopefully fi
 
 ## Prototypes
 **Split Sixty Wedge**
-- This is the first prototype I'm working on that is intended to be 'lap-friendly', which should receive the custom PCBs I've designed to each include 5 switches in a column and a header that sticks out the top to allow for hand-wiring the key matrix between columns. This prototype is designed to be a simple 5x12 rectilinear split keyboard with each half arranged into a forward-pointing wedge. This configuration should get your wrists into a sensible orientation while typing either on a desk or your lap. I'm calling this first prototype the **split sixty wedge**:
+- This is the first prototype I'm working on that is intended to be 'lap-friendly'. It should receive the custom PCBs I've designed to each include 5 switches in a column and a header that sticks out the top to allow for hand-wiring the key matrix between columns. This prototype is designed to be a simple 5x12 rectilinear split keyboard with each half arranged into a forward-pointing wedge. This configuration should get your wrists into a sensible orientation while typing either on a desk or your lap. It also includes a trackball, to help reduce the need for a dedicated pointing device. I'm calling this first prototype the **split sixty wedge**:
 ![split sixty wedge](resources/split_sixty_wedge.png)
 
 ## Prints

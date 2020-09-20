@@ -11,9 +11,9 @@ mcu_mount=true;
 mcu=true;
 
 trackball_mount=true;
-trackball=false;
-sensor=false;
-bearings=false;
+trackball=true;
+sensor=true;
+bearings=true;
 
 keyboard_x_count = 6;
 keyboard_y_count = 5;
@@ -33,6 +33,7 @@ switch_base_dy = switch_plate_dy + 2*switch_base_thickness + switch_base_toleran
 switch_base_dz = switch_base_thickness;
 
 // Keyboard attributes
+keyboard_base_color = [80/255, 100/255, 200/255];
 keyboard_snap_hole_rad = 3;
 keyboard_bottom_connector_bottom_z = -switch_base_dx * sin(keyboard_y_rotation);
 keyboard_bottom_connector_top_z = -(switch_base_dx-switch_base_bottom_width) * sin(keyboard_y_rotation);
@@ -58,7 +59,7 @@ module keyboard() {
   y_count = keyboard_y_count;
   switch_spacing = keyboard_switch_spacing;
 
-  base_color = [80/255, 100/255, 200/255];
+  base_color = keyboard_base_color;
   base_thickness = switch_base_thickness;
   base_bottom_width = switch_base_bottom_width;
   base_dx = switch_base_dx;

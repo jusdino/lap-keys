@@ -4,7 +4,7 @@ include <../components/connectors.scad>;
 use <keyboard.scad>;
 
 
-trackball_mount_color = [32/255, 62/255, 212/255];
+trackball_mount_color = keyboard_base_color;
 trackball_mount_body_rotation_dx = 60;
 trackball_mount_ball_dia = 34.0;
 trackball_mount_bearing_headroom = 0.8;
@@ -155,7 +155,6 @@ module trackball_mount() {
         }
       }
     }
-    trackball_mount_slot_cutout();
   }
 
   module bearings(bearing_dia, phi, $fn=10) {
@@ -191,6 +190,9 @@ module trackball_mount_backing() {
   wire_opening_dx = 5.0;
   pin_tab_x = board_cavity_dx/2+pin_tab_pin_dia;
 
+  center_peg_dia = 2.0;
+  center_peg_dz = 1.0;
+
   translate([0, 0, -outer_dr]) {
     difference() {
       cylinder(d=outer_dia, h=outer_dr);
@@ -198,9 +200,10 @@ module trackball_mount_backing() {
         cube([wire_opening_dx+e, wire_cavity_dy, wire_cavity_outer_dz+2*e]);
       }
     }
-    translate([0, 0,  outer_dr]) {
-      trackball_mount_backing_connectors(subtractive=false);
-    }
+  }
+  trackball_mount_backing_connectors(subtractive=false);
+  translate([0, 0, -e]) {
+    cylinder(d=center_peg_dia, h=center_peg_dz, $fn=12);
   }
 }
 
@@ -247,6 +250,7 @@ module trackball_mount_cutout() {
   body_rotation_dx = trackball_mount_body_rotation_dx;
   hole_dia = trackball_mount_hole_dia;
   hole_overreach_dz = trackball_mount_hole_overreach_dz;
+  bearing_headroom = trackball_mount_bearing_headroom;
   mount_dy = trackball_mount_dy;
 
   assembly_cavity_dz = trackball_mount_assembly_cavity_dz;
@@ -255,8 +259,8 @@ module trackball_mount_cutout() {
   outer_dia = trackball_mount_outer_dia;
   outer_dr = trackball_mount_outer_dr;
 
-  corner_grip_dz = 2.0;
-  corner_grip_dr = outer_dr/2;
+  corner_grip_dz = 3.0;
+  corner_grip_dr = outer_dr+bearing_headroom/2;
 
   rotate([body_rotation_dx, 0, 0]) {
     translate([0, -mount_dy, 0]) {
@@ -264,10 +268,11 @@ module trackball_mount_cutout() {
         // Main body
         difference() {
           translate([0, 0, -assembly_cavity_dz]) {
-            translate([0, 0, -corner_grip_dz]) {
-              cylinder(d=outer_dia-outer_dr, h=outer_dz);
-            }
-            cylinder(d=outer_dia-outer_dr-corner_grip_dr, h=outer_dz+e);
+            cylinder(d=outer_dia-outer_dr-e, h=outer_dz);
+            // translate([0, 0, -corner_grip_dz]) {
+            //   cylinder(d=outer_dia-outer_dr-e, h=outer_dz);
+            // }
+            // cylinder(d=outer_dia-outer_dr-corner_grip_dr, h=outer_dz+e);
           }
         }
       }
@@ -275,19 +280,3 @@ module trackball_mount_cutout() {
   }
 }
 
-module trackball_mount_slot_cutout() {
-  e = 0.01;
-
-  keyboard_top_dz = keyboard_top_dz;
-
-  outer_dz = trackball_mount_outer_dz;
-  outer_dia = trackball_mount_outer_dia;
-  outer_dr = trackball_mount_outer_dr;
-
-  difference() {
-    translate([-outer_dia/2, 0, -keyboard_top_dz]) {
-      cube([outer_dia, sqrt(pow(outer_dz, 2) + pow(outer_dia, 2)), keyboard_top_dz]);
-    }
-    trackball_mount_cutout();
-  }
-}
