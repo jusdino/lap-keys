@@ -1,2 +1,4 @@
 *.gcode
 .idea
+*.pyc
+pcbs/*/fab/*
