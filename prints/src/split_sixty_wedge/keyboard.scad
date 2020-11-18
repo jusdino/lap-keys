@@ -10,8 +10,8 @@ pcbs=true;
 mcu_mount=true;
 mcu=true;
 
-trackball_mount=true;
-trackball=true;
+trackball_mount=false;
+trackball=false;
 sensor=true;
 bearings=true;
 
@@ -91,8 +91,10 @@ module keyboard() {
           }
         }
       }
-      translate([0, -keyboard_top_dy, 0]) {
-        trackball_mount_cutout();
+      if (trackball_mount) {
+        translate([0, -keyboard_top_dy, 0]) {
+          trackball_mount_cutout();
+        }
       }
     }
     // Bottom connector plate
@@ -154,8 +156,8 @@ module keyboard() {
     y_rotation = keyboard_y_rotation;
     z_rotation = keyboard_z_rotation;
 
-    pcb_dz = switch_column_plate_pcb_dz;
-    pcb_holder_overreach_dz = switch_column_plate_pcb_holder_overreach_dz;
+    pcb_dz = switch_plate_pcb_dz;
+    pcb_holder_overreach_dz = switch_plate_pcb_holder_overreach_dz;
 
     plate_dz = switch_plate_dz;
     plate_dx = switch_plate_dx;
