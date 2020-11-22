@@ -3,15 +3,15 @@
 
 // MULTI-MODULE VARS
 // General inputs
-keys_and_caps=true;
 plates=true;
+keys_and_caps=true;
 pcbs=true;
 
 mcu_mount=true;
 mcu=true;
 
 trackball_mount=false;
-trackball=false;
+trackball=true;
 sensor=true;
 bearings=true;
 
@@ -42,14 +42,14 @@ keyboard_bottom_connector_front_y = switch_base_dx * cos(keyboard_y_rotation) * 
 
 keyboard_mcu_connectors_shift_dy = 5 + keyboard_snap_hole_rad;
 keyboard_mcu_connectors_dx = 10 + 2*keyboard_snap_hole_rad;
-keyboard_mcu_connectors_dy = 34 + 2*keyboard_snap_hole_rad;
+keyboard_mcu_connectors_dy = 55 + 2*keyboard_snap_hole_rad;
 
 keyboard_top_dx = switch_base_dy*sin(keyboard_z_rotation)*2;
 keyboard_top_dy = switch_base_dy*cos(keyboard_z_rotation);
 keyboard_top_dz = switch_base_bottom_width * sin(keyboard_y_rotation);
 
 include <trackball_mount.scad>;
-include <elite_c_mount.scad>;
+include <proton_c_mount.scad>;
 
 keyboard();
 module keyboard() {
@@ -124,7 +124,7 @@ module keyboard() {
   }
   if (mcu_mount) {
     translate([0, bottom_connector_front_y, bottom_connector_top_z]) {
-      elite_c_mount(mcu);
+      proton_c_mount(mcu);
     }
   }
 

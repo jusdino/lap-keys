@@ -1,48 +1,48 @@
-include <../components/mcus/elite_c.scad>;
+include <../components/mcus/proton_c.scad>;
 
 use <keyboard.scad>;
 
-elite_c_mount_usb_connector_space_dx = 14.0;
-elite_c_mount_usb_connector_space_dz = 7.0;
+proton_c_mount_usb_connector_space_dx = 14.0;
+proton_c_mount_usb_connector_space_dz = 7.0;
 
-elite_c_mount_support_overhang = 0.6;
+proton_c_mount_support_overhang = 0.6;
 
-elite_c_mount_mcu_y = -keyboard_mcu_connectors_shift_dy - keyboard_snap_hole_rad;
-elite_c_mount_mcu_z = elite_c_pcb_dz + elite_c_usb_dz/2 + elite_c_mount_usb_connector_space_dz/2;
+proton_c_mount_mcu_y = -keyboard_mcu_connectors_shift_dy - keyboard_snap_hole_rad;
+proton_c_mount_mcu_z = proton_c_pcb_dz + proton_c_usb_dz/2 + proton_c_mount_usb_connector_space_dz/2;
   
-module elite_c_mount(mcu=false) {
-  mcu_y = elite_c_mount_mcu_y;
-  mcu_z = elite_c_mount_mcu_z;
+module proton_c_mount(mcu=false) {
+  mcu_y = proton_c_mount_mcu_y;
+  mcu_z = proton_c_mount_mcu_z;
 
-  elite_c_mount_top();
-  elite_c_mount_bottom();
+  proton_c_mount_top();
+  proton_c_mount_bottom();
   if (mcu) {
     translate([0, mcu_y, mcu_z]) {
       rotate([180, 0, 0]) {
-        elite_c();
+        proton_c();
       }
     }
   }
 }
 
-module elite_c_mount_bottom() {
+module proton_c_mount_bottom() {
   e = 0.01;
 
-  pcb_dx = elite_c_pcb_dx;
-  pcb_dy = elite_c_pcb_dy;
-  pcb_dz = elite_c_pcb_dz;
+  pcb_dx = proton_c_pcb_dx;
+  pcb_dy = proton_c_pcb_dy;
+  pcb_dz = proton_c_pcb_dz;
   
-  usb_dx = elite_c_usb_dx;
-  usb_dy = elite_c_usb_dy;
-  usb_dz = elite_c_usb_dz;
+  usb_dx = proton_c_usb_dx;
+  usb_dy = proton_c_usb_dy;
+  usb_dz = proton_c_usb_dz;
   
-  mcu_y = elite_c_mount_mcu_y;
-  mcu_z = elite_c_mount_mcu_z;
+  mcu_y = proton_c_mount_mcu_y;
+  mcu_z = proton_c_mount_mcu_z;
 
-  usb_connector_space_dx = elite_c_mount_usb_connector_space_dx;
-  usb_connector_space_dz = elite_c_mount_usb_connector_space_dz;
+  usb_connector_space_dx = proton_c_mount_usb_connector_space_dx;
+  usb_connector_space_dz = proton_c_mount_usb_connector_space_dz;
   
-  support_overhang = elite_c_mount_support_overhang;
+  support_overhang = proton_c_mount_support_overhang;
 
   under_support_dz = 1.5;
 
@@ -86,22 +86,22 @@ module elite_c_mount_bottom() {
   }
 }
 
-module elite_c_mount_top() {
+module proton_c_mount_top() {
   e = 0.01;
 
-  pcb_dx = elite_c_pcb_dx;
-  pcb_dy = elite_c_pcb_dy;
-  pcb_dz = elite_c_pcb_dz;
+  pcb_dx = proton_c_pcb_dx;
+  pcb_dy = proton_c_pcb_dy;
+  pcb_dz = proton_c_pcb_dz;
   
-  usb_dx = elite_c_usb_dx;
-  usb_dy = elite_c_usb_dy;
-  usb_dz = elite_c_usb_dz;
+  usb_dx = proton_c_usb_dx;
+  usb_dy = proton_c_usb_dy;
+  usb_dz = proton_c_usb_dz;
   
-  mcu_y = elite_c_mount_mcu_y;
-  mcu_z = elite_c_mount_mcu_z;
+  mcu_y = proton_c_mount_mcu_y;
+  mcu_z = proton_c_mount_mcu_z;
 
-  usb_connector_space_dx = elite_c_mount_usb_connector_space_dx;
-  usb_connector_space_dz = elite_c_mount_usb_connector_space_dz;
+  usb_connector_space_dx = proton_c_mount_usb_connector_space_dx;
+  usb_connector_space_dz = proton_c_mount_usb_connector_space_dz;
 
   snap_hole_rad = keyboard_snap_hole_rad;
   bottom_connector_dz = keyboard_bottom_connector_dz;
@@ -109,7 +109,7 @@ module elite_c_mount_top() {
   mcu_connectors_dx = keyboard_mcu_connectors_dx;
   mcu_connectors_dy = keyboard_mcu_connectors_dy;
   
-  support_overhang = elite_c_mount_support_overhang;
+  support_overhang = proton_c_mount_support_overhang;
 
   top_cover_thickness = 1.0;
   top_cover_cavity_dz = 1.0;
