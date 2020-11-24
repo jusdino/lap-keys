@@ -1,10 +1,11 @@
-proton_c_pcb_dx = 18.0;
-proton_c_pcb_dy = 51.6;
+proton_c_pcb_tolerance = 0.1;
+proton_c_pcb_dx = 18.0 + 2*proton_c_pcb_tolerance;
+proton_c_pcb_dy = 51.6 + 2*proton_c_pcb_tolerance;
 proton_c_pcb_dz = 1.6;
 
 proton_c_usb_dx = 9.0;
 proton_c_usb_dy = 7.4;
-proton_c_usb_dz = 3.2;
+proton_c_usb_dz = 3.3;
 proton_c_usb_overhang_dy = 0.8;
 
 module proton_c() {

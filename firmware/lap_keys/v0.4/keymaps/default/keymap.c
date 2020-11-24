@@ -41,7 +41,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,      KC_NO,     KC_NO,     KC_NO,     KC_NO,     KC_NO,    KC_DEL, \
   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,      KC_LEFT,   KC_DOWN,   KC_UP,     KC_RGHT,   KC_NO,    KC_NO, \
   KC_TRNS, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,      KC_NO,    KC_MINS,   KC_EQL,    KC_LBRC,   KC_RBRC,   KC_TRNS, \
-  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,   KC_NO,      KC_NO,     KC_NO,     KC_TRNS,   KC_TRNS,   KC_TRNS,  KC_TRNS \
+  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,   MO(2),      KC_NO,     KC_NO,     KC_TRNS,   KC_TRNS,   KC_TRNS,  KC_TRNS \
+),
+    
+/* LAYER 2    
+ * ,-----------------------------------------------. ,-----------------------------------------------.
+ * |       |       |       |       |       |       | |       |       |       |       |       |       |
+ * |-------+-------+-------+-------+-------+-------| |-------+-------+-------+-------+-------+-------|
+ * |       |       |       |       |       |       | |       |  TOG  | MODEF |       |       |       |
+ * |-------+-------+-------+-------+-------+-------| |-------+-------+-------+-------+-------+-------|
+ * |       |       |       |       |       |       | |       |  VAI  |  HUI  |  SAI  |       |       | 
+ * |-------+-------+-------+-------+-------+-------| |-------+-------+-------+-------+-------+-------|
+ * | ----- |       |       |       |       |       | |       |       |       |       |       |       |
+ * |-------+-------+-------+-------+-------+-------| |-------+-------+-------+-------+-------+-------|
+ * | ----- | ----- | ----- | ----- |       |       | |       |       | ----- | ----- | ----- | ----- |
+ * `-----------------------------------------------' `-----------------------------------------------'
+ */   
+[2] = LAYOUT( \
+  KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,      KC_NO,     KC_NO,        KC_NO,            KC_NO,     KC_NO,    KC_NO, \
+  KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,      KC_NO,     RGB_TOG,      RGB_MODE_FORWARD, KC_NO,     KC_NO,    KC_DEL, \
+  KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,      KC_NO,     RGB_VAI,      RGB_HUI,          RGB_SAI,   KC_NO,    KC_NO, \
+  KC_TRNS,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,      KC_NO,     KC_NO,        KC_NO,            KC_NO,     KC_NO,    KC_NO, \
+  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,   KC_NO,      KC_NO,     KC_NO,        KC_TRNS,          KC_TRNS,   KC_TRNS,  KC_TRNS \
 )
-
 };
+

@@ -35,6 +35,7 @@
 */
 
 /* RGBLIGHT */
+#define RGBLIGHT_LAYERS
 #define RGB_DI_PIN B3
 #define RGBLED_NUM 44
 #define RGBLIGHT_ANIMATIONS
