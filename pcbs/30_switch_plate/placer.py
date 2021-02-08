@@ -18,6 +18,7 @@ class Placer():
         self.d_origin = origin + pcbnew.wxPoint(7500000, -6000000)
         self.d_orientation = -900  # Orientation in 1ths of a degree, it seems
         self.u_outset = 10E6
+        self.u_orientation = 1800  # Start orientation plus rotation for each side
         self.xa_origin = origin + pcbnew.wxPoint(step/2, -1125E4)
 
     @staticmethod
@@ -56,7 +57,7 @@ class Placer():
                     self.sw_origin \
                     + self.x_step(i, self.step) \
                     + pcbnew.wxPoint(0, -self.u_outset))
-            u.SetOrientation(0)
+            u.SetOrientation(self.u_orientation + 0)
             # Bottom
             u = self.pcb.FindModuleByReference(f'U{i+12}')
             print(f'Placing {u.GetReference()}')
@@ -65,7 +66,7 @@ class Placer():
                     + self.x_step(5-i, self.step) \
                     + self.y_step(4, self.step) \
                     + pcbnew.wxPoint(0, self.u_outset))
-            u.SetOrientation(1800)
+            u.SetOrientation(self.u_orientation + 1800)
         for i in range(5):
             # Right
             u = self.pcb.FindModuleByReference(f'U{i+7}')
@@ -75,7 +76,7 @@ class Placer():
                     + self.x_step(5, self.step) \
                     + self.y_step(i, self.step) \
                     + pcbnew.wxPoint(self.u_outset, 0))
-            u.SetOrientation(-900)
+            u.SetOrientation(self.u_orientation + -900)
             # Left
             u = self.pcb.FindModuleByReference(f'U{i+18}')
             print(f'Placing {u.GetReference()}')
@@ -83,7 +84,7 @@ class Placer():
                     self.sw_origin \
                     + self.y_step(4-i, self.step)
                     + pcbnew.wxPoint(-self.u_outset, 0))
-            u.SetOrientation(900)
+            u.SetOrientation(self.u_orientation + 900)
         pcbnew.Refresh()
 
     def place_headers(self):
