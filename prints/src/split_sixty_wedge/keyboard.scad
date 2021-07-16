@@ -25,7 +25,7 @@ include <switch_plate.scad>;
 
 // switch_base attributes
 switch_base_thickness = 1.5;
-switch_base_bottom_width = 3;
+switch_base_bottom_width = 4;
 switch_base_tolerance_dy = 0.5;
 
 switch_base_dx = switch_plate_dx + 2*switch_base_thickness;
@@ -192,7 +192,42 @@ module keyboard() {
           }
           // Bottom subtraction
           translate([base_bottom_width, base_bottom_width, -e]) {
-            cube([base_dx-2*base_bottom_width, base_dy-base_bottom_width*2, base_thickness+2*e]);
+            difference() {
+              cube([base_dx-2*base_bottom_width, base_dy-base_bottom_width*2, base_thickness+2*e]);
+              // Fillets
+              translate([-e, -e, -e]) {
+                difference() {
+                  cube([base_bottom_width+e, base_bottom_width+e, base_thickness+2*e]);
+                  translate([base_bottom_width-e, base_bottom_width-e, -e]) {
+                    cylinder(h=base_thickness+4*e, r=base_bottom_width+e, $fn=32);
+                  }
+                }
+              }
+              translate([base_dx-3*base_bottom_width-e, -e, -e]) {
+                difference() {
+                  cube([base_bottom_width+e, base_bottom_width+e, base_thickness+2*e]);
+                  translate([base_bottom_width-base_bottom_width-e, base_bottom_width-e, -e]) {
+                    cylinder(h=base_thickness+4*e, r=base_bottom_width+e, $fn=32);
+                  }
+                }
+              }
+              translate([base_dx-3*base_bottom_width-e, base_dy-base_bottom_width*3-e, -e]) {
+                difference() {
+                  cube([base_bottom_width+e, base_bottom_width+e, base_thickness+2*e]);
+                  translate([base_bottom_width-base_bottom_width-e, base_bottom_width-base_bottom_width-e, -e]) {
+                    cylinder(h=base_thickness+4*e, r=base_bottom_width+e, $fn=32);
+                  }
+                }
+              }
+              translate([-e, base_dy-base_bottom_width*3-e, -e]) {
+                difference() {
+                  cube([base_bottom_width+e, base_bottom_width+e, base_thickness+2*e]);
+                  translate([base_bottom_width-e, base_bottom_width-base_bottom_width-e, -e]) {
+                    cylinder(h=base_thickness+4*e, r=base_bottom_width+e, $fn=32);
+                  }
+                }
+              }
+            }
           }
         }
       }
