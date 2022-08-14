@@ -34,20 +34,22 @@ switch_base_dz = switch_base_thickness;
 
 // Keyboard attributes
 keyboard_base_color = [80/255, 100/255, 200/255];
-keyboard_snap_hole_rad = 3;
+keyboard_front_tab_dx = 3;
 keyboard_bottom_connector_bottom_z = -switch_base_dx * sin(keyboard_y_rotation);
 keyboard_bottom_connector_top_z = -(switch_base_dx-switch_base_bottom_width) * sin(keyboard_y_rotation);
 keyboard_bottom_connector_dz = keyboard_bottom_connector_top_z - keyboard_bottom_connector_bottom_z;
 keyboard_bottom_connector_front_y = switch_base_dx * cos(keyboard_y_rotation) * sin(keyboard_z_rotation);
 
-keyboard_mcu_connectors_shift_dy = 5 + keyboard_snap_hole_rad;
-keyboard_mcu_connectors_dx = 10 + 2*keyboard_snap_hole_rad;
-keyboard_mcu_connectors_dy = 55 + 2*keyboard_snap_hole_rad;
+keyboard_mcu_connectors_shift_dy = 5 + keyboard_front_tab_dx;
+keyboard_mcu_connectors_dx = 10 + 2*keyboard_front_tab_dx;
+keyboard_mcu_connectors_dy = 55 + 2*keyboard_front_tab_dx;
+keyboard_mcu_pin_tab_length = 9;
 
 keyboard_top_dx = switch_base_dy*sin(keyboard_z_rotation)*2;
 keyboard_top_dy = switch_base_dy*cos(keyboard_z_rotation);
 keyboard_top_dz = switch_base_bottom_width * sin(keyboard_y_rotation);
 
+include <../components/connectors.scad>;
 include <trackball_mount.scad>;
 include <proton_c_mount.scad>;
 
@@ -73,7 +75,7 @@ module keyboard() {
   bottom_connector_dz = keyboard_bottom_connector_dz;
   bottom_connector_front_y = keyboard_bottom_connector_front_y;
 
-  snap_hole_rad = keyboard_snap_hole_rad;
+  front_tab_dx = keyboard_front_tab_dx;
   mcu_connectors_shift_dy = keyboard_mcu_connectors_shift_dy;
   mcu_connectors_dx = keyboard_mcu_connectors_dx;
   mcu_connectors_dy = keyboard_mcu_connectors_dy;
@@ -106,13 +108,22 @@ module keyboard() {
           }
         }
       }
-      // MCU connector snap holes
-      translate([0, bottom_connector_front_y, bottom_connector_bottom_z+bottom_connector_dz/2]) {
-        translate([0, -mcu_connectors_shift_dy, 0]) {
-          translate([mcu_connectors_dx/2, 0, 0]) sphere(r=snap_hole_rad, $fn=20);
-          translate([-mcu_connectors_dx/2, 0, 0]) sphere(r=snap_hole_rad, $fn=20);
-          translate([mcu_connectors_dx/2, -mcu_connectors_dy, 0]) sphere(r=snap_hole_rad, $fn=20);
-          translate([-mcu_connectors_dx/2, -mcu_connectors_dy, 0]) sphere(r=snap_hole_rad, $fn=20);
+    }
+    // MCU connections
+    translate([0, bottom_connector_front_y, bottom_connector_top_z]) {
+      // Back pin slot
+      translate([-mcu_connectors_dx/2, -mcu_connectors_shift_dy-mcu_connectors_dy-front_tab_dx, 0]) {
+        rotate([0, -90, -90]) {
+          pin_slot(length=keyboard_mcu_pin_tab_length, pin_dy=mcu_connectors_dx, pin_dia=pin_tab_pin_dia, $fn=32);
+        }
+      }
+      // Front tab slots
+      translate([mcu_connectors_dx/2, 0, 0]) {
+        front_tab_slot(front_tab_dx*2, bottom_connector_dz);
+      }
+      translate([-mcu_connectors_dx/2, 0, 0]) {
+        mirror([1, 0, 0]) {
+          front_tab_slot(front_tab_dx*2, bottom_connector_dz);
         }
       }
     }
@@ -124,10 +135,9 @@ module keyboard() {
   }
   if (mcu_mount) {
     translate([0, bottom_connector_front_y, bottom_connector_top_z]) {
-      proton_c_mount(mcu);
+      mcu_mount(mcu);
     }
   }
-
   
   module wedge_mirror() {
     wedge_rotate() {
@@ -245,6 +255,28 @@ module keyboard() {
         switch_plate();
       }
     }
+  }
 
+  module front_tab_slot(tab_dy, connector_dz) {
+    e = 0.01;
+    overreach_dy = 2;
+    tab_tolerance = 0.1;
+
+    translate([tab_dy/2, mcu_y, -e]) {
+      difference() {
+        translate([0, -overreach_dy, 0]) {
+          cube([tab_dy/2, tab_dy+overreach_dy, tab_dy-connector_dz+e]);
+          translate([tab_dy/2, 0, 0]) {
+            rotate([-90, 0, 0]) {
+              cylinder(h=tab_dy+overreach_dy, d=2*(tab_dy-connector_dz)+e, $fn=32);
+            }
+          }
+        }
+        translate([-e, 0, -e]) {
+          cube([tab_dy/2+tab_tolerance+e, tab_dy+tab_tolerance+e, tab_tolerance+(tab_dy-connector_dz)/2+e]);
+        }
+      }
+    }
   }
 }
+

@@ -10,9 +10,11 @@ elite_c_mount_support_overhang = 0.6;
 elite_c_mount_mcu_y = -keyboard_mcu_connectors_shift_dy - keyboard_snap_hole_rad;
 elite_c_mount_mcu_z = elite_c_pcb_dz + elite_c_usb_dz/2 + elite_c_mount_usb_connector_space_dz/2;
   
-module elite_c_mount(mcu=false) {
-  mcu_y = elite_c_mount_mcu_y;
-  mcu_z = elite_c_mount_mcu_z;
+// Generic names for external use
+mcu_y = elite_c_mount_mcu_y;
+mcu_z = elite_c_mount_mcu_z;
+
+module mcu_mount(mcu=false) {
 
   elite_c_mount_top();
   elite_c_mount_bottom();
@@ -36,9 +38,6 @@ module elite_c_mount_bottom() {
   usb_dy = elite_c_usb_dy;
   usb_dz = elite_c_usb_dz;
   
-  mcu_y = elite_c_mount_mcu_y;
-  mcu_z = elite_c_mount_mcu_z;
-
   usb_connector_space_dx = elite_c_mount_usb_connector_space_dx;
   usb_connector_space_dz = elite_c_mount_usb_connector_space_dz;
   
@@ -97,8 +96,7 @@ module elite_c_mount_top() {
   usb_dy = elite_c_usb_dy;
   usb_dz = elite_c_usb_dz;
   
-  mcu_y = elite_c_mount_mcu_y;
-  mcu_z = elite_c_mount_mcu_z;
+  pin_tab_length = keyboard_mcu_pin_tab_length;
 
   usb_connector_space_dx = elite_c_mount_usb_connector_space_dx;
   usb_connector_space_dz = elite_c_mount_usb_connector_space_dz;
@@ -118,17 +116,48 @@ module elite_c_mount_top() {
   // Top-cover
   difference() {
     // Outer shell
-    hull() {
-      translate([0, mcu_y, mcu_z]) {
-        translate([-pcb_dx/2-top_cover_thickness, -pcb_dy-top_cover_thickness, 0]) {
-          cube([pcb_dx+2*top_cover_thickness, pcb_dy+top_cover_thickness, top_cover_thickness+top_cover_cavity_dz]);
+    union() {
+      hull() {
+        // Top block
+        translate([0, mcu_y, mcu_z]) {
+          translate([-pcb_dx/2-top_cover_thickness, -pcb_dy-top_cover_thickness, 0]) {
+            cube([pcb_dx+2*top_cover_thickness, pcb_dy+top_cover_thickness, top_cover_thickness+top_cover_cavity_dz]);
+          }
+        }
+        // Front bottom bar
+        translate([-mcu_connectors_dx/2-snap_hole_rad, -mcu_connectors_shift_dy, 0]) {
+          cube([mcu_connectors_dx+2*snap_hole_rad, snap_hole_rad, snap_hole_rad-bottom_connector_dz/2]);
+        }
+        // Shape that will mate with corresponding tab slot on base
+        translate([mcu_connectors_dx/2, e-mcu_connectors_shift_dy-mcu_connectors_dy-snap_hole_rad, 0]) {
+          rotate([90, -90, 0]) {
+            difference() {
+              pin_slot_profile(length=2*e, pin_dy=mcu_connectors_dx, pin_dia=snap_hole_rad, $fn=32);
+              translate([-snap_hole_rad/2-e, -snap_hole_rad-e, -e]) {
+                cube([snap_hole_rad/2+e, mcu_connectors_dx+2*snap_hole_rad+2*e, 4*e]);
+              }
+            }
+          }
         }
       }
+      // Pin tab
+      translate([mcu_connectors_dx/2, -mcu_connectors_shift_dy-mcu_connectors_dy-snap_hole_rad, 0]) {
+        rotate([90, -90, 0]) {
+          pin_tab(length=pin_tab_length, pin_dy=mcu_connectors_dx, pin_dia=snap_hole_rad, $fn=32);
+        }
+      }
+      // front tabs
       translate([0, -mcu_connectors_shift_dy, 0]) {
-        translate([mcu_connectors_dx/2, 0, 0]) cylinder(r=snap_hole_rad, h=snap_hole_rad-bottom_connector_dz/2, $fn=16);
-        translate([-mcu_connectors_dx/2, 0, 0]) cylinder(r=snap_hole_rad, h=snap_hole_rad-bottom_connector_dz/2, $fn=16);
-        translate([mcu_connectors_dx/2, -mcu_connectors_dy, 0]) cylinder(r=snap_hole_rad, h=snap_hole_rad-bottom_connector_dz/2, $fn=16);
-        translate([-mcu_connectors_dx/2, -mcu_connectors_dy, 0]) cylinder(r=snap_hole_rad, h=snap_hole_rad-bottom_connector_dz/2, $fn=16);
+        translate([mcu_connectors_dx/2+snap_hole_rad, 0, 0]) {
+          cylinder(r=snap_hole_rad, h=snap_hole_rad-bottom_connector_dz/2, $fn=16);
+          cube([snap_hole_rad, snap_hole_rad, snap_hole_rad-bottom_connector_dz/2]);
+        }
+        translate([-mcu_connectors_dx/2-snap_hole_rad, 0, 0]) {
+          cylinder(r=snap_hole_rad, h=snap_hole_rad-bottom_connector_dz/2, $fn=16);
+          translate([-snap_hole_rad, 0, 0]) {
+            cube([snap_hole_rad, snap_hole_rad, snap_hole_rad-bottom_connector_dz/2]);
+          }
+        }
       }
     }
     translate([0, mcu_y, mcu_z]) {
@@ -152,18 +181,10 @@ module elite_c_mount_top() {
       cube([usb_connector_space_dx, -mcu_y, usb_connector_space_dz+e]);
     }
   }
-  // Connectors
-  difference() {
-    translate([0, 0, -bottom_connector_dz/2]) {
-      translate([0, -mcu_connectors_shift_dy, 0]) {
-        translate([mcu_connectors_dx/2, 0, 0]) sphere(r=snap_hole_rad, $fn=20);
-        translate([-mcu_connectors_dx/2, 0, 0]) sphere(r=snap_hole_rad, $fn=20);
-        translate([mcu_connectors_dx/2, -mcu_connectors_dy, 0]) sphere(r=snap_hole_rad, $fn=20);
-        translate([-mcu_connectors_dx/2, -mcu_connectors_dy, 0]) sphere(r=snap_hole_rad, $fn=20);
-      }
-    }
-    translate([-mcu_connectors_dx/2-snap_hole_rad, mcu_y-mcu_connectors_dy, -bottom_connector_dz-snap_hole_rad]) {
-      cube([mcu_connectors_dx+2*snap_hole_rad, mcu_connectors_dy+2*snap_hole_rad, snap_hole_rad]);
+  // Pin tab
+  translate([mcu_connectors_dx/2, -mcu_connectors_shift_dy-mcu_connectors_dy-snap_hole_rad, 0]) {
+    rotate([90, -90, 0]) {
+      pin_tab(length=pin_tab_length, pin_dy=mcu_connectors_dx, pin_dia=snap_hole_rad, $fn=32);
     }
   }
 }

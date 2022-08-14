@@ -7,7 +7,7 @@ pin_tab_bump_dx=0.6;
 pin_tab_bump_dia=3.0;
 
 //pin_tab(9);
-module pin_tab(length, pin_dy) {
+module pin_tab(length, pin_dy=pin_tab_pin_dy, pin_dia=pin_tab_pin_dia) {
   e=0.01;
 
   bump_dx=pin_tab_bump_dx;
@@ -16,8 +16,8 @@ module pin_tab(length, pin_dy) {
   tab_dz=length;
 
   difference() {
-    pin_tab_base(length, pin_dy);
-    translate([0, pin_dy/2, tab_dz-bump_dia]) {
+    pin_tab_base(length=length, pin_dy=pin_dy, pin_dia=pin_dia);
+    translate([pin_dia/2, pin_dy/2, tab_dz-bump_dia]) {
       rotate([0, 0, 180]) {
         bump(h=bump_dx, d=bump_dia);
       }
@@ -26,35 +26,48 @@ module pin_tab(length, pin_dy) {
 }
 
 //pin_slot(9);
-module pin_slot(length, pin_dy) {
+module pin_slot(length, pin_dy=pin_tab_pin_dy, pin_dia=pin_tab_pin_dia) {
   e=0.01;
 
   part_gap=pin_tab_part_gap;
-
-  pin_dia=pin_tab_pin_dia;
 
   bump_dx=pin_tab_bump_dx;
   bump_dia=pin_tab_bump_dia;
 
   box_back_dz=1;
 
-  difference() {
-    pin_slot_profile(length=length+box_back_dz+part_gap);
-    translate([0, 0, box_back_dz]) {
-      pin_tab_base(length, pin_dy, subtractive=true);
+  translate([0, 0, -length-box_back_dz-part_gap]) {
+    difference() {
+      pin_slot_profile(length=length+box_back_dz+part_gap, pin_dy=pin_dy, pin_dia=pin_dia);
+      translate([0, 0, box_back_dz]) {
+        pin_tab_base(length, pin_dy, subtractive=true);
+      }
     }
-  }
-  translate([0, pin_dy/2, bump_dia]) {
-    rotate([0, 0, 180]) {
-      bump(h=bump_dx, d=bump_dia);
+    translate([pin_dia/2, pin_dy/2, bump_dia]) {
+      rotate([0, 0, 180]) {
+        bump(h=bump_dx, d=bump_dia);
+      }
+    }
+    hull() {
+      pin_slot_profile(length=e, pin_dy=pin_dy, pin_dia=pin_dia);
+      translate([-pin_dia/2, 0, 0]) {
+        rotate([0, 90, 0]) {
+          translate([pin_dia/2, 0, 0]) {
+            pin_slot_profile(length=pin_dia/2, pin_dy=pin_dy, pin_dia=pin_dia);
+          }
+        }
+      }
     }
   }
 
-  module pin_slot_profile(length) {
-    e=0.01;
+}
 
-    box_dx=2*pin_dia;
-    box_dz=length;
+module pin_slot_profile(length, pin_dy=pin_tab_pin_dy, pin_dia=pin_tab_pin_dia) {
+  e=0.01;
+
+  box_dx=2*pin_dia;
+  box_dz=length;
+  translate([pin_dia/2, 0, 0]) {
     union() {
       cylinder(h=box_dz, d=box_dx);
       translate([0, pin_dy, 0]) {
@@ -71,21 +84,21 @@ module pin_slot(length, pin_dy) {
 }
 
 //pin_tab_base(9);
-module pin_tab_base(length, pin_dy, subtractive=false) {
+module pin_tab_base(length, pin_dy, pin_dia=pin_tab_pin_dia, subtractive=false) {
   e=0.01;
 
   part_gap=pin_tab_part_gap;
 
-  pin_dia=pin_tab_pin_dia;
-
   tab_dz=subtractive ? length+part_gap+e : length;
   tab_dx=pin_dia/2;
-  translate([-tab_dx, -pin_dia/2, 0]) {
+  translate([0, -pin_dia/2, 0]) {
     cube([tab_dx, pin_dy+pin_dia, tab_dz]);
   }
-  cylinder(h=tab_dz, d=pin_dia);
-  translate([0, pin_dy, 0]) {
+  translate([tab_dx, 0, 0]) {
     cylinder(h=tab_dz, d=pin_dia);
+    translate([0, pin_dy, 0]) {
+      cylinder(h=tab_dz, d=pin_dia);
+    }
   }
 }
 
