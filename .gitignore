@@ -1,4 +1,5 @@
 *.gcode
 .idea
 *.pyc
+*.3mf
 pcbs/*/fab/*
